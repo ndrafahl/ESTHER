@@ -32,6 +32,8 @@ public class TableData {
     private final int[] pocket;          //This player's two cards
     private final int[] board;           //The community cards (may be length 0, 3, 4, or 5)
 
+    private final Player[] players;      //The array containing the players in the game.
+
     //The following is a length five array consisting of ArrayLists of Strings
     //Each ArrayList lists, in order, the seat # (index 1) and action taken
     //Index 0 is nothing more than ante
@@ -54,7 +56,7 @@ public class TableData {
             int totalPot, int tablePot, 
             int playerPot,  int raisesLeft,
             int[] pocket, int[] board,
-            ArrayList<String>[] handActions, String validActions) {
+            ArrayList<String>[] handActions, String validActions, Player[] players) {
         this.playerCount = playerCount;
         this.handsPlayed = handsPlayed;
         this.handsRemaining = handsRemaining;
@@ -72,6 +74,7 @@ public class TableData {
         this.board = board;
         this.handActions = handActions;
         this.validActions = validActions;
+        this.players = players;
     }
 
     /**
@@ -252,6 +255,14 @@ public class TableData {
     public String getValidActions() {
         return validActions;
     }
+
+    /**
+     * Returns an array containing the Players currently in the running of this game.
+     * Needed to simulate the game for MCTS.
+     * @return Player []
+     */
+
+    public Player[] getPlayers() { return players; }
 
   
 }

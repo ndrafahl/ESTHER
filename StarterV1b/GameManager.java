@@ -68,7 +68,7 @@ public class GameManager {
         int[] limits = {1, 1, 1, 2, 2};
         this.bets = limits;
         this.raiseLimit = 3;
-        this.hands = 10 * players.length;
+        this.hands = 1 * players.length; // Controls the amount of hands played in a single "game"
 
         gameLevelSetup();
     }
@@ -191,7 +191,8 @@ public class GameManager {
                         dealer.getPocket(currentBettor),
                         dealer.getBoard(round),
                         handActions,
-                        valid
+                        valid,
+                        players
                 );
 
                 response = players[currentBettor].getAction(td);
