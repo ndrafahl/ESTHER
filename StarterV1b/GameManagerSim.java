@@ -192,7 +192,8 @@ public class GameManagerSim {
                         dealer.getBoard(round),
                         handActions,
                         valid,
-                        players
+                        players,
+                        dealer
                 );
 
                 response = players[currentBettor].getAction(td);

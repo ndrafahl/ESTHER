@@ -34,6 +34,8 @@ public class TableData {
 
     private final Player[] players;      //The array containing the players in the game.
 
+    private final Dealer dealer;
+
     //The following is a length five array consisting of ArrayLists of Strings
     //Each ArrayList lists, in order, the seat # (index 1) and action taken
     //Index 0 is nothing more than ante
@@ -56,7 +58,7 @@ public class TableData {
             int totalPot, int tablePot, 
             int playerPot,  int raisesLeft,
             int[] pocket, int[] board,
-            ArrayList<String>[] handActions, String validActions, Player[] players) {
+            ArrayList<String>[] handActions, String validActions, Player[] players, Dealer dealer) {
         this.playerCount = playerCount;
         this.handsPlayed = handsPlayed;
         this.handsRemaining = handsRemaining;
@@ -75,6 +77,7 @@ public class TableData {
         this.handActions = handActions;
         this.validActions = validActions;
         this.players = players;
+        this.dealer = dealer;
     }
 
     /**
@@ -263,6 +266,8 @@ public class TableData {
      */
 
     public Player[] getPlayers() { return players; }
+
+    public Dealer getDealer() { return dealer; }
 
   
 }

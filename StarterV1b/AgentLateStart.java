@@ -29,7 +29,7 @@ public class AgentLateStart extends Player {
         System.out.println("Starting a new game...");
 
         // Create a new dealer, we may not want to do this and instead use a copy of the current dealer.
-        Dealer dealer = new Dealer(data.getPlayerCount());
+        Dealer dealer = data.getDealer();
 
         // Get the array of Players from the tabledata.
         Player[] simPlayers = data.getPlayers();
@@ -42,7 +42,7 @@ public class AgentLateStart extends Player {
         //GameManager g = new GameManager(simPlayers, dealer, false, limits, 3, 1 * simPlayers.length); //Uncomment this to run with standard GameManager
 
         // Play the Simulation of the game.
-        GameManagerSim g = new GameManagerSim(simPlayers, dealer, false, limits, 3, 1 * simPlayers.length);
+        GameManagerSim g = new GameManagerSim(simPlayers, dealer, false, limits, 3, 1);
 
         // This needs to be modified so we start from a specific point in time, rather than the first players hand that was already dealt
         int[] end = g.playGame(data.getHandsPlayed());
