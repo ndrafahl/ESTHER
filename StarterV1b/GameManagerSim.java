@@ -73,6 +73,20 @@ public class GameManagerSim {
         gameLevelSetup();
     }
 
+    // New GameManagerSim contructor based off of current table data
+    public GameManagerSim(TableData data) {
+        this.players = data.getPlayers();
+        this.dealer = data.getDealer();
+        this.debug = false;
+
+        int[] limits = {1, 1, 1, 2, 2};
+        this.bets = limits;
+        this.raiseLimit = 3;
+        this.hands = 1;
+
+        gameLevelSetup(data.getButton(), data.getHandsPlayed(), data.getCashBalances());
+    }
+
     public int[] playGame(int currentHandNumber) {
         System.out.println("Let's play cards!");
 
@@ -133,6 +147,15 @@ public class GameManagerSim {
         }
     }
 
+    // Created new gameLevelSetup specifically for GameManagerSim
+    private void gameLevelSetup(int currentButton, int currentHandNumber, int[] currentBanks) {
+        button = currentButton;
+        handNumber = currentHandNumber;
+        stillIn = new boolean[players.length]; // This may need adjusting
+        playerStakes = new int[players.length]; // This may need adjusting
+        bank = currentBanks;
+    }
+
     private void handLevelSetup(int hand) {
         button = (button + 1) % players.length;
         for (int x = 0; x < players.length; x++) {
@@ -146,7 +169,6 @@ public class GameManagerSim {
         for (int x=0;x<5;x++) {
             handActions[x] =  new ArrayList<>();
         }
-
     }
 
     private void manageBettingRound() {

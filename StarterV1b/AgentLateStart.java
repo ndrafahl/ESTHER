@@ -42,7 +42,8 @@ public class AgentLateStart extends Player {
         //GameManager g = new GameManager(simPlayers, dealer, false, limits, 3, 1 * simPlayers.length); //Uncomment this to run with standard GameManager
 
         // Play the Simulation of the game.
-        GameManagerSim g = new GameManagerSim(simPlayers, dealer, false, limits, 3, 1);
+        //GameManagerSim g = new GameManagerSim(simPlayers, dealer, false, limits, 3, 1);
+        GameManagerSim g = new GameManagerSim(data);
 
         // This needs to be modified so we start from a specific point in time, rather than the first players hand that was already dealt
         int[] end = g.playGame(data.getHandsPlayed());
