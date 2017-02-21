@@ -5,10 +5,27 @@ import java.util.Random;
 
 /**
  * Created by Russell on 2/16/2017.
+ *
+ * This class is a hidden layer of a neural network.
+ * All that is contained in this class is a list of
+ * the neurons in this layer, a pointer to the layer
+ * before it, the number of neurons in this layer,
+ * and an array that contains the outputs of each
+ * of the neurons in this layer.
  */
 public class HiddenLayer extends NetworkLayer {
 
     NetworkLayer previousLayer;
+
+    /*************************************************************
+     * Constructor
+     * @param size
+     * @param weights
+     * @param bias
+     * @param aThePreviousLayer
+     *
+     *
+     */
 
     public HiddenLayer(int size, double[][] weights, double[] bias, NetworkLayer aThePreviousLayer){
         previousLayer = aThePreviousLayer;
