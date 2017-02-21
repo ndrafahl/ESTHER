@@ -12,4 +12,6 @@ public interface Neuron {
     public void computeOutput(double[] inputs);
 
     public double getOutput();
+
+    public double[] getWeights();
 }

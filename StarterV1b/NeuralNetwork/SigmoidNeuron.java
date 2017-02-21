@@ -3,28 +3,38 @@ package NeuralNetwork;
 
 /**
  * Created by Russell on 2/15/2017.
+ *
+ * This class is an implementation of the Neuron class.
+ *
+ * This class is a sigmoidNeuron and it is different from
+ * normal neurons. This neuron will return outputs between
+ * 1 and 0 depending on how large its inputs add up to be.
+ *
  */
 public class SigmoidNeuron implements Neuron {
-    private double bias, z, output;
+    private double bias, output;
     private double[] weights;
-    private int x;
 
+    /**************************************************************
+     * Constructors
+     * @param inputWeights
+     * @param biasWeight
+     *
+     * This function only has on constructor. Due to the neural
+     * network blue print class this neurons weights and bias will
+     * have already been created so all we need to do is pass it in
+     * and this object stores that data.
+     *************************************************************/
 
-    public SigmoidNeuron(int sizeOfPreviousLayer){
-        weights = new double[sizeOfPreviousLayer];
-        bias = Math.random() * 10 - 5;
-        for(x = 0; x < sizeOfPreviousLayer; x++){
-            weights[x] = Math.random() * 2 - .999;
-        }
-        output = 0;
-    }
-
-    public SigmoidNeuron(double biasWeight, double[] inputWeights){
+    public SigmoidNeuron(double[] inputWeights, double biasWeight){
         weights = inputWeights;
         bias = biasWeight;
-        output = 0;
     }
 
+    /************************************************************
+     * Methods
+     * @param biasWeight
+     ************************************************************/
 
     @Override
     public void setBias(double biasWeight) {
@@ -36,13 +46,20 @@ public class SigmoidNeuron implements Neuron {
         return this.bias;
     }
 
+    /************************************************************
+     *
+     * @param inputs
+     * This method computes the output based on the outputs
+     * of the previous layer.
+     ***********************************************************/
+
     @Override
     public void computeOutput(double[] inputs) {
-        z = 0;
-        for(x = 0; x < inputs.length; x++){
+        double z = 0;                      //z is the summation of all the outputs of the previous layer multiplied by their weights
+        for(int x = 0; x < inputs.length; x++){
            z += inputs[x] * weights[x];
         }
-        output = 1 / (1 + Math.exp(z + bias));
+        output = 1 / (1 + Math.exp(z + bias));        //output is a double between 1 and 0 that is calculated from the summation
     }
 
     @Override
@@ -50,15 +67,7 @@ public class SigmoidNeuron implements Neuron {
         return output;
     }
 
+    @Override
     public double[] getWeights(){return weights;}
 
-    public double getWeightAt(int index){return weights[index];}
-
-    public void changeWeights(double[] newWeights){
-        weights = newWeights;
-    }
-
-    public void changeWeightAt(int index, double newWeight){
-        weights[index] = newWeight;
-    }
 }
