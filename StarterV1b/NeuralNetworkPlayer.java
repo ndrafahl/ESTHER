@@ -121,7 +121,7 @@ public class NeuralNetworkPlayer extends Player {
      * that all it does is returns the index of a specific neural network.
      * @param pocketCards
      * @return
-     */
+     ***********************************************************************/
 
     private int findNeuron(int[] pocketCards){
         card1Suit = pocketCards[0] / 13;
