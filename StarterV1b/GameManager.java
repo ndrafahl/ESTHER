@@ -149,6 +149,10 @@ public class GameManager {
 
     }
 
+    /* TODO:  Figure out why GameManager is going from button 5 to button 6, instead of 0.
+       This is causing an ArrayOutOfBounds Exception.
+       GameManagerSim does not have this issue.
+     */
     private void manageBettingRound() {
         if (debug) {
             System.out.println("Dealing the next set of cards");
@@ -164,7 +168,7 @@ public class GameManager {
         }
 
         while (activePlayers > 1 && actionsNeeded > 0) {
-            //.println("Action to "+currentBettor);
+            if (debug) { System.out.println("Action to "+currentBettor); }
             if (stillIn[currentBettor]) {
                 String valid = "fold,";
                 if (raisesLeft > raiseLimit) {
@@ -193,10 +197,12 @@ public class GameManager {
                         handActions,
                         valid,
                         players,
-                        dealer
+                        dealer,
+                        playerStakes
                 );
 
                 response = players[currentBettor].getAction(td);
+                if (debug) { System.out.println("GameManager got response from : " + currentBettor); }
 
                 if (!valid.contains(response)) {
                     System.out.println("ERROR");

@@ -1,16 +1,10 @@
-/*
- * ESTHER
- * The Educational Simulated Texas Hold Em Room
- */
-
-
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 /**
- *
- * @author schafer
+ * Created by Nick Drafahl on 2/23/2017.
  */
-public class TableData {
+public class TableDataSim {
     private final int playerCount;       //How many people at the table
     private final int handsRemaining;    //How many hands remain after this one
     private final int handsPlayed;       //What hand # is this hand
@@ -36,8 +30,6 @@ public class TableData {
 
     private final Dealer dealer;
 
-    private final int[] playerStakes;
-
     //The following is a length five array consisting of ArrayLists of Strings
     //Each ArrayList lists, in order, the seat # (index 1) and action taken
     //Index 0 is nothing more than ante
@@ -46,22 +38,21 @@ public class TableData {
     //Index 3 is the turn
     //Index 4 is the river
     //The ArrayLists MAY be empty if it is early in the hand
-    private final ArrayList<String>[] handActions;
+    //private final ArrayList<String>[] handActions;
 
     //This is a string which is a comma separatated list of valid actions
     //for this player at this moment
     //Either "fold,check,bet"  "fold,call,raise" or "fold,call"
     private final String validActions;
 
-    public TableData(int playerCount, int handsRemaining, int handsPlayed,
-            int mySeatNumber, int button,
-            int bettingRound,int[] limitStructure,
-            boolean[] whosIn, int[] cashBalances,
-            int totalPot, int tablePot,
-            int playerPot,  int raisesLeft,
-            int[] pocket, int[] board,
-            ArrayList<String>[] handActions, String validActions, Player[] players, Dealer dealer,
-                     int[] playerStakes) {
+    public TableDataSim (int playerCount, int handsRemaining, int handsPlayed,
+                     int mySeatNumber, int button,
+                     int bettingRound,int[] limitStructure,
+                     boolean[] whosIn, int[] cashBalances,
+                     int totalPot, int tablePot,
+                     int playerPot,  int raisesLeft,
+                     int[] pocket, int[] board,
+                     ArrayList<String>[] handActions, String validActions, Player[] players, Dealer dealer) {
         this.playerCount = playerCount;
         this.handsPlayed = handsPlayed;
         this.handsRemaining = handsRemaining;
@@ -77,12 +68,53 @@ public class TableData {
         this.raisesLeft = raisesLeft;
         this.pocket = pocket;
         this.board = board;
-        this.handActions = handActions;
+        //this.handActions = handActions;
         this.validActions = validActions;
         this.players = players;
         this.dealer = dealer;
-        this.playerStakes = playerStakes;
     }
+
+    /*public TableDataSim (TableData data) {
+        this.playerCount = playerCount;
+        this.handsPlayed = handsPlayed;
+        this.handsRemaining = handsRemaining;
+        this.mySeatNumber = mySeatNumber;
+        this.button = button;
+        this.bettingRound = bettingRound;
+
+        for (int i = 0; i < data.getLimitStructure().length; ++i) {
+            this.limitStructure[i] = data.getLimitStructure()[i];
+        }
+
+        this.whosIn = whosIn;
+        for (int i = 0; i < data.getWhosIn().length; ++i) {
+            this.whosIn[i] = data.getWhosIn()[i];
+        }
+
+        for (int i = 0; i < data.getCashBalances().length; ++i) {
+            this.cashBalances[i] = data.getCashBalances()[i];
+        }
+
+        this.totalPot = totalPot;
+        this.tablePot = tablePot;
+        this.playerPot = playerPot;
+        this.raisesLeft = raisesLeft;
+
+        for (int i = 0; i < data.getPocket().length; ++i) {
+            this.pocket[i] = data.getPocket()[i];
+        }
+
+        for (int i = 0; i < data.getBoard().length; ++i) {
+            this.board[i] = data.getBoard()[i];
+        }
+        this.validActions = validActions;
+
+        for (int i = 0; i < data.getPlayers().length; ++i) {
+            this.players[i] = data.getPlayers()[i];
+        }
+
+        this.dealer = dealer;
+    } */
 
     /**
      * Reports the number of players at the current table [Default = 6]
@@ -93,7 +125,7 @@ public class TableData {
     }
 
     /**
-     * Reports how many hands of poker remain after this hand.  
+     * Reports how many hands of poker remain after this hand.
      * @return int
      */
     public int getHandsRemaining() {
@@ -101,7 +133,7 @@ public class TableData {
     }
 
     /**
-     * Reports which hand is currently in play (how many have been completed 
+     * Reports which hand is currently in play (how many have been completed
      * PLUS this hand).
      * @return int
      */
@@ -118,7 +150,7 @@ public class TableData {
         return mySeatNumber;
     }
 
-        /**
+    /**
      * Reports a value from 1 to N (the number of players) indicating the
      * location of the button.
      * @return int
@@ -127,7 +159,7 @@ public class TableData {
         return button;
     }
 
-     /**
+    /**
      * Reports a value from 1 to 4 representing the current betting round
      * @return int
      */
@@ -135,7 +167,7 @@ public class TableData {
         return bettingRound;
     }
 
-     /**
+    /**
      * Reports a length five array indicating the values of the ante,
      * and the bet value in each of the four rounds of betting.
      * Default is {1,1,1,2,2} but this may change.
@@ -145,9 +177,9 @@ public class TableData {
         return limitStructure;
     }
 
-     /**
+    /**
      * Reports a length N array of booleans indicating who's hand
-     * is still in play in this hand of poker.  
+     * is still in play in this hand of poker.
      * Note, that this is zero based indeces.
      * @return boolean[]
      */
@@ -155,9 +187,9 @@ public class TableData {
         return whosIn;
     }
 
-     /**
+    /**
      * Reports a length N array indicating the amount of money CURRENTLY
-     * held by each player.  (Note that in the middle of betting rounds this 
+     * held by each player.  (Note that in the middle of betting rounds this
      * value is ever changing).
      * Note, that this is zero based indeces.
      * @return int[]
@@ -166,7 +198,7 @@ public class TableData {
         return cashBalances;
     }
 
-     /**
+    /**
      * Reports the current value of the pot.
      * @return int
      */
@@ -183,7 +215,7 @@ public class TableData {
         return tablePot;
     }
 
-        /**
+    /**
      * Reports how much money the current player HAS put into the pot during
      * the current round of betting.  The difference between this and the Table
      * Pot represents how much money will be put in if the current player calls.
@@ -193,10 +225,10 @@ public class TableData {
         return playerPot;
     }
 
-     /**
-     * Reports how many raises remain in this round of betting.  
+    /**
+     * Reports how many raises remain in this round of betting.
      * Note that if there is a three raise limit per round of betting this
-     * value starts at 4 representing the opening bet and the three additional 
+     * value starts at 4 representing the opening bet and the three additional
      * raises.
      * @return int
      */
@@ -204,8 +236,8 @@ public class TableData {
         return raisesLeft;
     }
 
-     /**
-     * A length two array which returns the  int values of the 
+    /**
+     * A length two array which returns the  int values of the
      * individual player's pocket cards.  Read the EstherTools documentation
      * for an explanation of how to translate this number to a <rank><suit>
      * value for human use.
@@ -215,11 +247,11 @@ public class TableData {
         return pocket;
     }
 
-     /**
-     * A variable length array which returns the int values of the 
+    /**
+     * A variable length array which returns the int values of the
      * cards on the board.  This array may have length 0, 3, 4, or 5 depending
      * on where the hand is at during it's play.
-     * Read the EstherTools documentation  for an explanation of how to 
+     * Read the EstherTools documentation  for an explanation of how to
      * translate this number to a <rank><suit> value for human use.
      * @return int[]
      */
@@ -244,9 +276,9 @@ public class TableData {
      * @param roundNumber
      * @return ArrayList<String>
      */
-    public ArrayList<String> getHandActions(int roundNumber) {
+    /*public ArrayList<String> getHandActions(int roundNumber) {
         return handActions[roundNumber];
-    }
+    } */
 
     /**
      * Reports a comma separated string of the two or three valid actions
@@ -272,8 +304,6 @@ public class TableData {
     public Player[] getPlayers() { return players; }
 
     public Dealer getDealer() { return dealer; }
-
-    public int[] getPlayerStakes() { return playerStakes; }
 
 
 }

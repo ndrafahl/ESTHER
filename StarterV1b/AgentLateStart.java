@@ -1,3 +1,4 @@
+import java.util.Arrays;
 import java.util.Random;
 
 /**
@@ -14,7 +15,7 @@ public class AgentLateStart extends Player {
 
     @Override
     public String getScreenName() {
-        return "Raise" + this.num;
+        return "LateStart" + this.num;
     }
 
     @Override
@@ -26,27 +27,30 @@ public class AgentLateStart extends Player {
         System.out.println(EstherTools.intCardToStringCard(data.getPocket()[1]));
 
         // Print to console to verify that we're starting a "new" game.
-        System.out.println("Starting a new game...");
+        System.out.println("Starting a new game from round " + data.getBettingRound());
 
         // Create a new dealer, we may not want to do this and instead use a copy of the current dealer.
         Dealer dealer = data.getDealer();
 
         // Get the array of Players from the tabledata.
-        Player[] simPlayers = data.getPlayers();
+        //Player[] simPlayers = data.getPlayers();
+        Player[] simPlayers = Arrays.copyOf(data.getPlayers(), data.getPlayers().length);
+        boolean[] simWhosIn = Arrays.copyOf(data.getWhosIn(), data.getWhosIn().length);
+        int[] simPlayerStakes = Arrays.copyOf(data.getPlayerStakes(), data.getPlayerStakes().length);
+        int[] simBank = Arrays.copyOf(data.getCashBalances(), data.getCashBalances().length);
 
         // Overwrite the "AgentLateStart" agent with a random player agent.  Later we need to change this to be the MCTS agent.
         // If we don't do this, we'll just recursively recreate a game each time til we run out of memory.
         simPlayers[this.num] = new AgentRandomPlayer(this.num);
 
-        //GameManager g = new GameManager(simPlayers, dealer, false);  // Default constructor, left here for documentation.  Unlikely to be used.
-        //GameManager g = new GameManager(simPlayers, dealer, false, limits, 3, 1 * simPlayers.length); //Uncomment this to run with standard GameManager
-
         // Play the Simulation of the game.
-        //GameManagerSim g = new GameManagerSim(simPlayers, dealer, false, limits, 3, 1);
-        GameManagerSim g = new GameManagerSim(data);
+        GameManagerSim g = new GameManagerSim(simPlayers, dealer, true, limits, 3, 1,
+                simWhosIn, simPlayerStakes, simBank, data);
+        //GameManagerSim g = new GameManagerSim(simPlayers, dealer, true, limits, 3, 1);
+        //GameManagerSim g = new GameManagerSim(data);
 
         // This needs to be modified so we start from a specific point in time, rather than the first players hand that was already dealt
-        int[] end = g.playGame(data.getHandsPlayed());
+        int[] end = g.playGame(data);
 
         // Game is over, return the totals from the round.  Likely base our fitness function from this.
         System.out.println("Final Totals");
