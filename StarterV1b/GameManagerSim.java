@@ -45,20 +45,8 @@ public class GameManagerSim {
 
 
     /*
-     The main constructor for this class requires that five things be provided
+     The main constructor for this class requires that ten things be provided
      */
-    public GameManagerSim(Player[] players, Dealer dealer, boolean debug,
-                       int[] bets, int raiseLimit, int hands) {
-        this.players = players;
-        this.dealer = dealer;
-        this.debug = debug;
-
-        this.bets = bets;
-        this.raiseLimit = raiseLimit;
-        this.hands = hands;
-
-        gameLevelSetup();
-    }
 
     public GameManagerSim(Player[] players, Dealer dealer, boolean debug,
                           int[] bets, int raiseLimit, int hands, boolean[] whosIn,
@@ -72,33 +60,6 @@ public class GameManagerSim {
         this.hands = hands;
 
         gameLevelSetup(whosIn, playerStakesIn, bankIn, data);
-    }
-
-    public GameManagerSim(Player[] players, Dealer dealer, boolean debug) {
-        this.players = players;
-        this.dealer = dealer;
-        this.debug = debug;
-
-        int[] limits = {1, 1, 1, 2, 2};
-        this.bets = limits;
-        this.raiseLimit = 3;
-        this.hands = 1 * players.length; // Controls the amount of hands played in a single "game"
-
-        gameLevelSetup();
-    }
-
-    // New GameManagerSim contructor based off of current table data
-    public GameManagerSim(TableData data) {
-        this.players = data.getPlayers();
-        this.dealer = data.getDealer();
-        this.debug = true;
-
-        int[] limits = {1, 1, 1, 2, 2};
-        this.bets = limits;
-        this.raiseLimit = 3;
-        this.hands = 1;
-
-        gameLevelSetup(data);
     }
 
     public int[] playGame(TableData data) {
@@ -150,45 +111,11 @@ public class GameManagerSim {
     }
 
     //private helper methods
-    private void gameLevelSetup() {
-        button = -1;
-        handNumber = 0;
-        stillIn = new boolean[players.length];
-        playerStakes = new int[players.length];
-        bank = new int[players.length];
-        for (int x = 0; x < bank.length; x++) {
-            bank[x] = 0;
-        }
-    }
-
-    // Created new gameLevelSetup specifically for GameManagerSim
-    private void gameLevelSetup(TableData data) {
-        button = data.getButton() + 1;
-        stillIn = data.getWhosIn(); // This may need adjusting
-        playerStakes = new int[players.length]; // This may need adjusting
-        bank = data.getCashBalances();
-    }
-
     private void gameLevelSetup(boolean[] whosIn, int[] playerStakesIn, int[] bankIn, TableData data) {
         button = data.getButton();
         stillIn = whosIn;
         playerStakes = playerStakesIn;
         bank = bankIn;
-    }
-
-    private void handLevelSetup(int hand) {
-        button = (button + 1) % players.length;
-        for (int x = 0; x < players.length; x++) {
-            stillIn[x] = true;
-            players[x].newHand(hand, bank);
-        }
-        dealer.shuffle();
-        pot = 0;
-        activePlayers = players.length;
-        round = 0;
-        for (int x=0;x<5;x++) {
-            handActions[x] =  new ArrayList<>();
-        }
     }
 
     private void handLevelSetup(TableData data) {
@@ -200,109 +127,6 @@ public class GameManagerSim {
             handActions[x] = new ArrayList<>();
         }
 
-    }
-
-    private void manageBettingRound() {
-        if (debug) {
-            System.out.println("Dealing the next set of cards");
-        }
-        String response;
-        round++;
-        raisesLeft = raiseLimit + 1;
-        int actionsNeeded = activePlayers;
-        currentBettor = (button + 1) % players.length;
-        tableStakes = 0;
-        for (int x = 0; x < playerStakes.length; x++) {
-            playerStakes[x] = 0;
-        }
-
-        while (activePlayers > 1 && actionsNeeded > 0) {
-            //.println("Action to "+currentBettor);
-            if (stillIn[currentBettor]) {
-                String valid = "fold,";
-                if (raisesLeft > raiseLimit) {
-                    valid += "check,bet";
-                } else if (raisesLeft == 0) {
-                    valid += "call";
-                } else {
-                    valid += "call,raise";
-                }
-
-                TableData td = new TableData(players.length,
-                        hands - handNumber,
-                        handNumber,
-                        currentBettor + 1,
-                        button + 1,
-                        round,
-                        bets,
-                        stillIn,
-                        bank,
-                        pot,
-                        tableStakes,
-                        playerStakes[currentBettor],
-                        raisesLeft,
-                        dealer.getPocket(currentBettor),
-                        dealer.getBoard(round),
-                        handActions,
-                        valid,
-                        players,
-                        dealer,
-                        playerStakes,
-                        currentBettor
-                );
-
-                response = players[currentBettor].getAction(td);
-
-                if (!valid.contains(response)) {
-                    System.out.println("ERROR");
-                    System.out.println("Player " + (currentBettor + 1) + " force fold.");
-                    System.out.println("Gave " + response);
-                    System.out.println("But only valid was" + valid);
-                    response = "fold";
-                }
-
-                switch (response) {
-                    case "fold":
-                        activePlayers--;
-                        actionsNeeded--;
-                        stillIn[currentBettor] = false;
-                        break;
-                    case "check":
-                        actionsNeeded--;
-                        lastToCall = currentBettor;
-                        break;
-                    case "call":
-                        actionsNeeded--;
-                        lastToCall = currentBettor;
-                        adjustStakes(currentBettor, false);
-                        break;
-                    case "bet":
-                        raisesLeft--;
-                        actionsNeeded = activePlayers - 1;
-                        adjustStakes(currentBettor, true);
-                        break;
-                    case "raise":
-                        raisesLeft--;
-                        actionsNeeded = activePlayers - 1;
-                        adjustStakes(currentBettor, true);
-                        break;
-                    default:
-                        System.out.println("ERROR: THIS IS SUPPOSED TO BE IMPOSSIBLE"
-                                + response);
-                        response = "fold";
-                        activePlayers--;
-                        stillIn[currentBettor] = false;
-                        break;
-                }
-            } else {
-                response = "out";
-            }
-
-            handActions[round].add("(" + (currentBettor + 1) + "," + response + ")");
-
-            currentBettor = (currentBettor + 1) % players.length;
-
-        }
     }
 
     private void manageBettingRound(TableData data) {
