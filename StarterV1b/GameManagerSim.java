@@ -247,7 +247,8 @@ public class GameManagerSim {
                         valid,
                         players,
                         dealer,
-                        playerStakes
+                        playerStakes,
+                        currentBettor
                 );
 
                 response = players[currentBettor].getAction(td);
@@ -312,8 +313,7 @@ public class GameManagerSim {
         round++;
         raisesLeft = raiseLimit + 1;
         int actionsNeeded = activePlayers;
-        //currentBettor = (button) % players.length;
-        currentBettor = button;
+        currentBettor = data.getCurrentBettor();
         tableStakes = data.getTablePot();
         for (int x = 0; x < playerStakes.length; x++) {
             playerStakes[x] = 0;
@@ -350,7 +350,8 @@ public class GameManagerSim {
                         valid,
                         players,
                         dealer,
-                        playerStakes
+                        playerStakes,
+                        currentBettor
                 );
 
                 response = players[currentBettor].getAction(td);

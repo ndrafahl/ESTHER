@@ -68,7 +68,7 @@ public class GameManager {
         int[] limits = {1, 1, 1, 2, 2};
         this.bets = limits;
         this.raiseLimit = 3;
-        this.hands = 1 * players.length; // Controls the amount of hands played in a single "game"
+        this.hands = 10 * players.length; // Controls the amount of hands played in a single "game"
 
         gameLevelSetup();
     }
@@ -78,6 +78,7 @@ public class GameManager {
 
         //Loop for each hand
         for (handNumber = 1; handNumber < hands + 1; handNumber++) {
+            if (debug) { System.out.println("GameManager is on game: " + handNumber + "\n"); }
             handLevelSetup(handNumber);
 
             if (debug) {
@@ -149,10 +150,6 @@ public class GameManager {
 
     }
 
-    /* TODO:  Figure out why GameManager is going from button 5 to button 6, instead of 0.
-       This is causing an ArrayOutOfBounds Exception.
-       GameManagerSim does not have this issue.
-     */
     private void manageBettingRound() {
         if (debug) {
             System.out.println("Dealing the next set of cards");
@@ -198,11 +195,13 @@ public class GameManager {
                         valid,
                         players,
                         dealer,
-                        playerStakes
+                        playerStakes,
+                        currentBettor
                 );
 
                 response = players[currentBettor].getAction(td);
-                if (debug) { System.out.println("GameManager got response from : " + currentBettor); }
+                if (debug) { System.out.println("GameManager got response from " + players[currentBettor].getScreenName()
+                        + "(" + currentBettor + ")");; }
 
                 if (!valid.contains(response)) {
                     System.out.println("ERROR");

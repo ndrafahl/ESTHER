@@ -26,7 +26,7 @@ public class TableData {
     private final int totalPot;          //how much money is in the pot for this hand
     private final int tablePot;          //how much money each "in" player should have added to the pot this betting round
     private final int playerPot;         //how much money this player HAS put in this betting round
-    private final int raisesLeft;          //how many raises remain
+    private final int raisesLeft;        //how many raises remain
 
 
     private final int[] pocket;          //This player's two cards
@@ -37,6 +37,8 @@ public class TableData {
     private final Dealer dealer;
 
     private final int[] playerStakes;
+
+    private final int currentBettor;
 
     //The following is a length five array consisting of ArrayLists of Strings
     //Each ArrayList lists, in order, the seat # (index 1) and action taken
@@ -61,7 +63,7 @@ public class TableData {
             int playerPot,  int raisesLeft,
             int[] pocket, int[] board,
             ArrayList<String>[] handActions, String validActions, Player[] players, Dealer dealer,
-                     int[] playerStakes) {
+                     int[] playerStakes, int currentBettor) {
         this.playerCount = playerCount;
         this.handsPlayed = handsPlayed;
         this.handsRemaining = handsRemaining;
@@ -82,6 +84,7 @@ public class TableData {
         this.players = players;
         this.dealer = dealer;
         this.playerStakes = playerStakes;
+        this.currentBettor = currentBettor;
     }
 
     /**
@@ -227,8 +230,6 @@ public class TableData {
         return board;
     }
 
-
-
     /**
      * This function can be used to find a complete sequence of actions from
      * any of the "five" betting rounds :
@@ -268,12 +269,29 @@ public class TableData {
      * Needed to simulate the game for MCTS.
      * @return Player []
      */
-
     public Player[] getPlayers() { return players; }
 
+    /**
+     * Returns the current dealer object from the TableData.
+     * Needed to simulate the game for MCTS
+     * @return Dealer
+     */
     public Dealer getDealer() { return dealer; }
 
+    /**
+     * Returns an integer array containing the amount that each player has put into the tablepot.
+     * Needed to simulate the game for MCTS
+     * @return int[] playerStakes
+     */
     public int[] getPlayerStakes() { return playerStakes; }
+
+    /**
+     * Return who the current bettor is of the round, so we can start the simulation from
+     * the correct person.
+     * Needed to simulate the game for MCTS.
+     * @return int currentBettor
+     */
+    public int getCurrentBettor() { return currentBettor; }
 
 
 }
