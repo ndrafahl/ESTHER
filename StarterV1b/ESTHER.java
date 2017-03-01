@@ -51,12 +51,19 @@ public class ESTHER {
         if (mode == 2) {
             Dealer dealer = new Dealer(players.length);
             GameManager g = new GameManager(players, dealer, true);
+            double startTime = System.currentTimeMillis();
+
             int[] end = g.playGame();
+
             System.out.println("Final Totals");
             for (int x = 0; x < end.length; x++) {
                 System.out.println((x + 1) + " "
                         + players[x].getScreenName() + " had " + end[x]);
             }
+
+            double endTime = System.currentTimeMillis();
+            double runTime = (endTime - startTime) / 1000;
+            System.out.println("Total runtime is: " + runTime + " seconds.");
         }
         if (mode == 3) {
             //Setup HashMap to store overall results

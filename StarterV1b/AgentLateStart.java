@@ -39,7 +39,7 @@ public class AgentLateStart extends Player {
 
         // Overwrite the "AgentLateStart" agent with a random player agent.  Later we need to change this to be the MCTS agent.
         // If we don't do this, we'll just recursively recreate a game each time til we run out of memory.
-        simPlayers[this.num] = new AgentRandomPlayer(this.num);
+        //simPlayers[this.num] = new AgentRandomPlayer(this.num);
 
         // Play the Simulation of the game.
         GameManagerSim g = new GameManagerSim(simPlayers, dealer, true, limits, 3, 1,
