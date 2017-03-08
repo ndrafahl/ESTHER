@@ -10,6 +10,9 @@ public class MyTeeeNode<T>{
     private T data = null;
     private List<MyTeeeNode> children = new ArrayList<>();
     private MyTeeeNode parent = null;
+    private int visited = 0;
+    private int winner = 0;
+    private String lastAction = "";
 
     public MyTeeeNode(T data) {
         this.data = data;
@@ -18,7 +21,7 @@ public class MyTeeeNode<T>{
     public void addChild(MyTeeeNode child) {
         child.setParent(this);
         this.children.add(child);
-    }
+ }
 
     public void addChild(T data) {
         MyTeeeNode<T> newChild = new MyTeeeNode<>(data);
@@ -51,5 +54,9 @@ public class MyTeeeNode<T>{
 
     public MyTeeeNode getParent() {
         return parent;
+    }
+
+    public boolean hasChildren() {
+        return !children.isEmpty();
     }
 }
