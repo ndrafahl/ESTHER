@@ -31,27 +31,6 @@ public class SigmoidNeuron implements Neuron {
         bias = biasWeight;
     }
 
-    /************************************************************
-     * Methods
-     * @param biasWeight
-     ************************************************************/
-
-    @Override
-    public void setBias(double biasWeight) {
-        bias = biasWeight;
-    }
-
-    @Override
-    public double getBias() {
-        return this.bias;
-    }
-
-    /************************************************************
-     *
-     * @param inputs
-     * This method computes the output based on the outputs
-     * of the previous layer.
-     ***********************************************************/
 
     @Override
     public void computeOutput(double[] inputs) {
@@ -67,7 +46,6 @@ public class SigmoidNeuron implements Neuron {
         return output;
     }
 
-    @Override
-    public double[] getWeights(){return weights;}
+
 
 }

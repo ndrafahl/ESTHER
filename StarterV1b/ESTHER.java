@@ -4,6 +4,9 @@
  * and open the template in the editor.
  */
 
+import NeuralNetwork.NeuralNetworkBluePrint;
+
+import java.util.Arrays;
 import java.util.HashMap;
 
 /**
@@ -22,9 +25,10 @@ public class ESTHER {
         //3 = "tournament" where there are N GAMES played,
         //         after each GAME the players shift one seat and the GAME
         //         is repeated (with the same hands from the previous GAME)
-        int mode = 1;
+        int mode = 4;
 
         Player[] players = new Player[6];
+
 
 
          //Adjust the right side of these assignments to select new agents
@@ -94,6 +98,10 @@ public class ESTHER {
                 String name = player.getScreenName();
                 System.out.println(name+" "+outcome.get(name));
             }
+        }
+
+        if(mode == 4){
+            
         }
 
     }
