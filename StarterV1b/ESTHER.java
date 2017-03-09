@@ -4,6 +4,7 @@
  * and open the template in the editor.
  */
 
+import java.io.IOException;
 import java.util.HashMap;
 
 /**
@@ -15,14 +16,14 @@ public class ESTHER {
     /**
      * @param args the command line arguments
      */
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         //this can be used to easily switch between multiple play modes
         //1 = one GAME (60 hands), same cards every time the GAME is played
         //2 = one GAME, different cards every time the GAME is played
         //3 = "tournament" where there are N GAMES played,
         //         after each GAME the players shift one seat and the GAME
         //         is repeated (with the same hands from the previous GAME)
-        int mode = 1;
+        int mode = 4;
 
         Player[] players = new Player[6];
 
@@ -94,6 +95,17 @@ public class ESTHER {
                 String name = player.getScreenName();
                 System.out.println(name+" "+outcome.get(name));
             }
+        }
+
+        if (mode == 4) {
+            try {
+                TrainingFunction.generateData("testData");
+            }
+            catch (IOException e){
+                throw e;
+            }
+
+
         }
 
     }

@@ -42,7 +42,7 @@ public class SigmoidNeuron implements Neuron {
         for(x = 0; x < inputs.length; x++){
            z += inputs[x] * weights[x];
         }
-        output = 1 / (1 + Math.exp(z + bias));
+        output = 1 / (1 + Math.exp(-z - bias));
     }
 
     @Override
