@@ -38,7 +38,9 @@ public class SigmoidNeuron implements Neuron {
         for(int x = 0; x < inputs.length; x++){
            z += inputs[x] * weights[x];
         }
-        output = 1 / (1 + Math.exp(z + bias));        //output is a double between 1 and 0 that is calculated from the summation
+      
+        output = 1 / (1 + Math.exp(-z - bias));      //output is a double between 1 and 0 that is calculated from the summation
+
     }
 
     @Override
