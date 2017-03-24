@@ -7,6 +7,7 @@ import java.util.Random;
 public class AgentLateStart extends Player {
     private final int num;
     private final int[] limits = {1, 1, 1, 2, 2};
+    private TreeNode root;
 
     public AgentLateStart (int num) {
         this.num = num;
