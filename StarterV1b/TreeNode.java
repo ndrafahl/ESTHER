@@ -14,6 +14,8 @@ public class TreeNode<T> { //} implements Iterable<TreeNode<T>> {
     private TreeNode<T> parent;
     private List<TreeNode<T>> children;
 
+    private int betWins;
+
     public TreeNode(T data) {
         this.data = data;
         this.children = new LinkedList<TreeNode<T>>();
