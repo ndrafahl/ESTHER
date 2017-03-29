@@ -24,7 +24,7 @@ public class ESTHER {
         //         after each GAME the players shift one seat and the GAME
         //         is repeated (with the same hands from the previous GAME)
 
-        int mode = 4;
+        int mode = 2;
       
 
 
@@ -32,13 +32,13 @@ public class ESTHER {
 
 
         //Adjust the right side of these assignments to select new agents
-        players[0] = new AgentRandomPlayer(1);
+        players[0] = new AgentRandomPlayer(0);
         players[1] = new AgentAlwaysCall(1);
         //players[2] = new AgentRandomPlayer(2);
         players[2] = new AgentLateStart(2);
-        players[3] = new AgentAlwaysRaise(1);
-        players[4] = new AgentRandomPlayer(3);
-        players[5] = new AgentRandomPlayer(3);
+        players[3] = new AgentAlwaysRaise(3);
+        players[4] = new AgentRandomPlayer(4);
+        players[5] = new AgentRandomPlayer(5);
         //players[5] = new AgentHumanCommandLine();
         //System.out.println("You will be player #6");
          

@@ -26,6 +26,9 @@ public class AgentLateStart extends Player {
         System.out.print(EstherTools.intCardToStringCard(data.getPocket()[0]) + " ");
         System.out.println(EstherTools.intCardToStringCard(data.getPocket()[1]));
 
+        System.out.println("LateStart's pocket in Int is: ");
+        System.out.println(data.getPocket()[0] + " " + data.getPocket()[1]);
+
         // Print to console to verify that we're starting a "new" game.
         System.out.println("Starting a new game from round " + data.getBettingRound());
 

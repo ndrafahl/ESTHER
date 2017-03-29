@@ -83,7 +83,7 @@ public class GameManager {
 
             if (debug) {
                 System.out.println("DEBUG is on.");
-                System.out.println("Button with player " + (button + 1) );
+                System.out.println("Button with player " + (button) + " (GameManager)");
             }
 
             //Everyone ante
@@ -92,7 +92,8 @@ public class GameManager {
                 bank[x] -= bets[1];
                 handActions[0].add((x+1)+",ante");
                 if (debug) {
-                    System.out.print((x+1) + " ");
+                    //System.out.print((x+1) + " ");
+                    System.out.print(x + " ");
                     System.out.print("" + EstherTools.intCardToStringCard(dealer.getPocket(x)[0]));
                     System.out.println(" " + EstherTools.intCardToStringCard(dealer.getPocket(x)[1]));
                 }
@@ -159,13 +160,14 @@ public class GameManager {
         raisesLeft = raiseLimit + 1;
         int actionsNeeded = activePlayers;
         currentBettor = (button + 1) % players.length;
+        int currentBettorX = currentBettor - 1;
         tableStakes = 0;
         for (int x = 0; x < playerStakes.length; x++) {
             playerStakes[x] = 0;
         }
 
         while (activePlayers > 1 && actionsNeeded > 0) {
-            if (debug) { System.out.println("Action to "+currentBettor); }
+            if (debug) { System.out.println("Action to "+currentBettorX); }
             if (stillIn[currentBettor]) {
                 String valid = "fold,";
                 if (raisesLeft > raiseLimit) {
@@ -251,6 +253,7 @@ public class GameManager {
             handActions[round].add("(" + (currentBettor + 1) + "," + response + ")");
 
             currentBettor = (currentBettor + 1) % players.length;
+            currentBettorX = (currentBettorX + 1) % players.length;
 
         }
     }
