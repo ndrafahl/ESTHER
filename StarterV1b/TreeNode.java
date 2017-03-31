@@ -2,6 +2,7 @@
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Arrays;
 
 /**
  * Created by Alex on 3/22/2017.
@@ -30,19 +31,22 @@ public class TreeNode<T> { //} implements Iterable<TreeNode<T>> {
     }
 
     public TreeNode(String aName) {
-	this.name = aName;
+	    this.name = aName;
+        this.children = new LinkedList<TreeNode<T>>();
     }
 
     public TreeNode(int[] aBoard) {
-	this.board = aBoard;
-	this.visits = 0;
-	this.betWins = 0;
-	this.foldWins = 0;
-	this.callWins = 0;
-	this.children = new LinkedList<TreeNode<T>>();
+        this.name = null;
+	    this.board = aBoard;
+	    this.visits = 0;
+	    this.betWins = 0;
+	    this.foldWins = 0;
+	    this.callWins = 0;
+	    this.children = new LinkedList<TreeNode<T>>();
     }
 
     public TreeNode(int[] aPocket, int[] aBoard) {
+        this.name = null;
         this.pocket = aPocket;
         this.board = aBoard;
         this.visits = 0;
@@ -75,8 +79,44 @@ public class TreeNode<T> { //} implements Iterable<TreeNode<T>> {
         return this.data;
     }
 
+    public String getName() {
+        return this.name;
+    }
+
+    public int[] getBoard() {
+        return this.board;
+    }
+
+    public int[] getPocket() {
+        return this.pocket;
+    }
+
     public List<TreeNode<T>> getChildren(){
         return this.children;
+    }
+
+    public int getNumOfChildren(){
+        return this.children.size();
+    }
+
+    public TreeNode<T> findChild(int[] intArray) {
+        for(TreeNode t : this.children) {
+            if(this.name == "root" || this.parent.getName() == "root") {
+                if(Arrays.equals(t.getPocket(), intArray)) {
+                    return t;
+                } else {
+                    return null;
+                }
+            } else {
+                if(Arrays.equals(t.getBoard(), intArray)) {
+                    return this;
+                } else {
+                    return null;
+                }
+            }
+        }
+
+        return null;
     }
 
     public boolean hasChildren() { return !children.isEmpty();}

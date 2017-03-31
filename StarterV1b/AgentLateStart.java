@@ -55,8 +55,17 @@ public class AgentLateStart extends Player {
         int[] simPlayerStakes = Arrays.copyOf(data.getPlayerStakes(), data.getPlayerStakes().length);
         int[] simBank = Arrays.copyOf(data.getCashBalances(), data.getCashBalances().length);
 
-    	TreeNode tempNode = new TreeNode(data.getPocket(), data.getBoard());
+    	//TreeNode tempNode = new TreeNode(data.getPocket(), data.getBoard());
+        TreeNode tempNode = root.findChild(tempPocket);
+        if(tempNode == null) {
+            System.out.println("No node found under root.");
+            tempNode = new TreeNode(tempPocket, tempBoard);
+            root.addChild(tempNode);
+        } else {
+            System.out.println("Node found under root!:");
+        }
     	//root.addChild(tempNode);
+        System.out.println("roots children count: " + root.getNumOfChildren());
 
         // Overwrite the "AgentLateStart" agent with a random player agent.  Later we need to change this to be the MCTS agent.
         // If we don't do this, we'll just recursively recreate a game each time til we run out of memory.
