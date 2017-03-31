@@ -126,6 +126,7 @@ public class GameManager {
     //private helper methods
     private void gameLevelSetup() {
         button = -1;
+        System.out.println("gameLevelSetup() in GameManager called.  Button = " + button);
         handNumber = 0;
         stillIn = new boolean[players.length];
         playerStakes = new int[players.length];
@@ -137,6 +138,8 @@ public class GameManager {
 
     private void handLevelSetup(int hand) {
         button = (button + 1) % players.length;
+        System.out.println("handLevelSetup in GameManager called at hand " + hand + " and button is now " + button);
+
         for (int x = 0; x < players.length; x++) {
             stillIn[x] = true;
             players[x].newHand(hand, bank);
@@ -167,7 +170,7 @@ public class GameManager {
         }
 
         while (activePlayers > 1 && actionsNeeded > 0) {
-            if (debug) { System.out.println("Action to "+currentBettorX); }
+            if (debug) { System.out.println("Action to " + currentBettor); }
             if (stillIn[currentBettor]) {
                 String valid = "fold,";
                 if (raisesLeft > raiseLimit) {

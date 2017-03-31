@@ -22,13 +22,24 @@ public class AgentLateStart extends Player {
     @Override
     public String getAction(TableData data) {
 
+        int[] tempPocket = Arrays.copyOf(data.getPocket(), data.getPocket().length);
+        int[] tempBoard = Arrays.copyOf(data.getBoard(), data.getBoard().length);
+
+        Arrays.sort(tempPocket);
+        Arrays.sort(tempBoard);
+
         // Display what this agent's current hand is to console for testing.
         System.out.println("LateStart's pocket is :");
         System.out.print(EstherTools.intCardToStringCard(data.getPocket()[0]) + " ");
         System.out.println(EstherTools.intCardToStringCard(data.getPocket()[1]));
 
-        System.out.println("LateStart's pocket in Int is: ");
+        System.out.print("LateStart's pocket in Int is: ");
         System.out.println(data.getPocket()[0] + " " + data.getPocket()[1]);
+
+        System.out.print("LateStart's sorted pocket in Int is: ");
+        System.out.println(tempPocket[0] + " " + tempPocket[1]);
+
+        
 
         // Print to console to verify that we're starting a "new" game.
         System.out.println("Starting a new game from round " + data.getBettingRound());
@@ -42,8 +53,8 @@ public class AgentLateStart extends Player {
         int[] simPlayerStakes = Arrays.copyOf(data.getPlayerStakes(), data.getPlayerStakes().length);
         int[] simBank = Arrays.copyOf(data.getCashBalances(), data.getCashBalances().length);
 
-	TreeNode tempNode = new TreeNode(data.getPocket(), data.getBoard());
-	root.addChild(tempNode);
+    	TreeNode tempNode = new TreeNode(data.getPocket(), data.getBoard());
+    	//root.addChild(tempNode);
 
         // Overwrite the "AgentLateStart" agent with a random player agent.  Later we need to change this to be the MCTS agent.
         // If we don't do this, we'll just recursively recreate a game each time til we run out of memory.

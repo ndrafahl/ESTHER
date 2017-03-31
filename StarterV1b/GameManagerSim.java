@@ -71,7 +71,7 @@ public class GameManagerSim {
 
             if (debug) {
                 System.out.println("DEBUG is on.");
-                System.out.println("Button with player " + (button) );
+                System.out.println("Button with player " + (button));
             }
 
             //Everyone ante
@@ -135,7 +135,8 @@ public class GameManagerSim {
         }
         String response;
         round++;
-        raisesLeft = raiseLimit + 1;
+        //raisesLeft = raiseLimit + 1;
+        raisesLeft = data.getRaisesLeft();
         int actionsNeeded = activePlayers;
         currentBettor = data.getCurrentBettor();
         tableStakes = data.getTablePot();
