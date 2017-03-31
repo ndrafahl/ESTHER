@@ -14,6 +14,8 @@ public class TreeNode<T> { //} implements Iterable<TreeNode<T>> {
     private TreeNode<T> parent;
     private List<TreeNode<T>> children;
 
+    private String name;
+
     private int visits;
     private int betWins;
     private int foldWins;
@@ -25,6 +27,19 @@ public class TreeNode<T> { //} implements Iterable<TreeNode<T>> {
     public TreeNode(T data) {
         this.data = data;
         this.children = new LinkedList<TreeNode<T>>();
+    }
+
+    public TreeNode(String aName) {
+	this.name = aName;
+    }
+
+    public TreeNode(int[] aBoard) {
+	this.board = aBoard;
+	this.visits = 0;
+	this.betWins = 0;
+	this.foldWins = 0;
+	this.callWins = 0;
+	this.children = new LinkedList<TreeNode<T>>();
     }
 
     public TreeNode(int[] aPocket, int[] aBoard) {

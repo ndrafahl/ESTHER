@@ -11,6 +11,7 @@ public class AgentLateStart extends Player {
 
     public AgentLateStart (int num) {
         this.num = num;
+	root = new TreeNode("root");
     }
 
     @Override
@@ -40,6 +41,9 @@ public class AgentLateStart extends Player {
         boolean[] simWhosIn = Arrays.copyOf(data.getWhosIn(), data.getWhosIn().length);
         int[] simPlayerStakes = Arrays.copyOf(data.getPlayerStakes(), data.getPlayerStakes().length);
         int[] simBank = Arrays.copyOf(data.getCashBalances(), data.getCashBalances().length);
+
+	TreeNode tempNode = new TreeNode(data.getPocket(), data.getBoard());
+	root.addChild(tempNode);
 
         // Overwrite the "AgentLateStart" agent with a random player agent.  Later we need to change this to be the MCTS agent.
         // If we don't do this, we'll just recursively recreate a game each time til we run out of memory.
