@@ -112,7 +112,7 @@ public class GameManagerSim {
 
     //private helper methods
     private void gameLevelSetup(boolean[] whosIn, int[] playerStakesIn, int[] bankIn, TableData data) {
-        button = data.getButton();
+        button = data.getButton() - 1;
         stillIn = whosIn;
         playerStakes = playerStakesIn;
         bank = bankIn;
@@ -131,7 +131,7 @@ public class GameManagerSim {
 
     private void manageBettingRound(TableData data) {
         if (debug) {
-            System.out.println("Entering manageBettingRound for round " + data.getBettingRound());
+            System.out.println("Entering manageBettingRound for round " + data.getBettingRound() + "(GameManagerSim)");
         }
         String response;
         round++;

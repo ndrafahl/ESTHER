@@ -207,6 +207,7 @@ public class GameManager {
                 response = players[currentBettor].getAction(td);
                 if (debug) { System.out.println("GameManager got response from " + players[currentBettor].getScreenName()
                         + "(" + currentBettor + ")");; }
+                if (debug) { System.out.println("Response was : " + response + "\n"); }
 
                 if (!valid.contains(response)) {
                     System.out.println("ERROR");
