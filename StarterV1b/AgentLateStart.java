@@ -1,5 +1,7 @@
 import java.util.Arrays;
 import java.util.Random;
+import java.util.List;
+import java.util.LinkedList;
 
 /**
  * Created by Nick Drafahl on 2/13/2017.
@@ -8,12 +10,16 @@ public class AgentLateStart extends Player {
     private final int num;
     private final int[] limits = {1, 1, 1, 2, 2};
     private TreeNode root;
+    private TreeNode currentNode;
     private boolean simulate;
+    private List<TreeNode> queue; 
 
     public AgentLateStart (int num) {
         this.num = num;
-	root = new TreeNode("root");
-    simulate = true;
+	    root = new TreeNode("root");
+        currentNode = root;
+        simulate = true;
+        this.queue = new LinkedList<TreeNode>();
     }
 
     @Override
@@ -57,6 +63,7 @@ public class AgentLateStart extends Player {
 
     	//TreeNode tempNode = new TreeNode(data.getPocket(), data.getBoard());
         TreeNode tempNode = root.findChild(tempPocket);
+
         if(tempNode == null) {
             System.out.println("No node found under root.");
             tempNode = new TreeNode(tempPocket, tempBoard);

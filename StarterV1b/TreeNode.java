@@ -16,6 +16,7 @@ public class TreeNode<T> { //} implements Iterable<TreeNode<T>> {
     private List<TreeNode<T>> children;
 
     private String name;
+    private int depth;
 
     private int visits;
     private int betWins;
@@ -32,6 +33,7 @@ public class TreeNode<T> { //} implements Iterable<TreeNode<T>> {
 
     public TreeNode(String aName) {
 	    this.name = aName;
+        this.depth = 0;
         this.children = new LinkedList<TreeNode<T>>();
     }
 
@@ -91,12 +93,20 @@ public class TreeNode<T> { //} implements Iterable<TreeNode<T>> {
         return this.pocket;
     }
 
+    public int getDepth() {
+        return this.depth;
+    }
+
     public List<TreeNode<T>> getChildren(){
         return this.children;
     }
 
     public int getNumOfChildren(){
         return this.children.size();
+    }
+
+    public boolean isRoot() {
+        return name == "root";
     }
 
     public TreeNode<T> findChild(int[] intArray) {
