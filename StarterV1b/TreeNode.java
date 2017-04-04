@@ -129,6 +129,27 @@ public class TreeNode<T> { //} implements Iterable<TreeNode<T>> {
         return null;
     }
 
+    public TreeNode<T> findChild(int[] inPocket, int[] inBoard, boolean isRoot) {
+        for(TreeNode t : this.children) {
+            if(isRoot) {
+                if(Arrays.equals(t.getPocket(), inPocket)) {
+                    return t;
+                } else {
+                    return null;
+                }
+            } else {
+                if(Arrays.equals(t.getBoard(), inBoard)) {
+                    return this;
+                } else {
+                    return null;
+                }
+            }
+        }
+
+        return null;
+    }
+
+
     public boolean hasChildren() { return !children.isEmpty();}
     // other features ...
 

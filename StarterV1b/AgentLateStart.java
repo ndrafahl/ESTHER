@@ -12,7 +12,16 @@ public class AgentLateStart extends Player {
     private TreeNode root;
     private TreeNode currentNode;
     private boolean simulate;
-    private List<TreeNode> queue; 
+    private List<TreeNode> queue;
+
+    // Local Variables Created from TableData
+    private int[] tempBoard;
+    private int[] tempPocket; 
+    private Dealer dealer;
+    private Player[] simPlayers;
+    private boolean[] simWhosIn;
+    private int[] simPlayerStakes;
+    private int[] simBank;
 
     public AgentLateStart (int num) {
         this.num = num;
@@ -29,12 +38,7 @@ public class AgentLateStart extends Player {
 
     @Override
     public String getAction(TableData data) {
-
-        int[] tempPocket = Arrays.copyOf(data.getPocket(), data.getPocket().length);
-        int[] tempBoard = Arrays.copyOf(data.getBoard(), data.getBoard().length);
-
-        Arrays.sort(tempPocket);
-        Arrays.sort(tempBoard);
+        generateLocalData(data);
 
         // Display what this agent's current hand is to console for testing.
         System.out.println("LateStart's pocket is :");
@@ -47,20 +51,9 @@ public class AgentLateStart extends Player {
         System.out.print("LateStart's sorted pocket in Int is: ");
         System.out.println(tempPocket[0] + " " + tempPocket[1]);
 
-        
-
         // Print to console to verify that we're starting a "new" game.
         //System.out.println("Starting a new game from round " + data.getBettingRound());
-
-        // Create a new dealer, we may not want to do this and instead use a copy of the current dealer.
-        Dealer dealer = data.getDealer();
-
-        // We need to deep copy the arrays from TableData so that we do not affect it.
-        Player[] simPlayers = Arrays.copyOf(data.getPlayers(), data.getPlayers().length);
-        boolean[] simWhosIn = Arrays.copyOf(data.getWhosIn(), data.getWhosIn().length);
-        int[] simPlayerStakes = Arrays.copyOf(data.getPlayerStakes(), data.getPlayerStakes().length);
-        int[] simBank = Arrays.copyOf(data.getCashBalances(), data.getCashBalances().length);
-
+     
     	//TreeNode tempNode = new TreeNode(data.getPocket(), data.getBoard());
         TreeNode tempNode = root.findChild(tempPocket);
 
@@ -113,5 +106,23 @@ public class AgentLateStart extends Player {
         Random randomGenerator = new Random();
         int index = randomGenerator.nextInt(choices.length);
         return choices[index];
+    }
+
+    private void generateLocalData(TableData data) {
+        // Create tempBoard and tempPocket data from the board and pocket in TableData.
+        // Sorting to more easily search/create nodes in the Tree.
+        tempPocket = Arrays.copyOf(data.getPocket(), data.getPocket().length);        
+        tempBoard = Arrays.copyOf(data.getBoard(), data.getBoard().length);
+
+        Arrays.sort(tempPocket);
+        Arrays.sort(tempBoard);
+
+        dealer = data.getDealer();
+
+        simPlayers = Arrays.copyOf(data.getPlayers(), data.getPlayers().length);
+        simWhosIn = Arrays.copyOf(data.getWhosIn(), data.getWhosIn().length);
+        simPlayerStakes = Arrays.copyOf(data.getPlayerStakes(), data.getPlayerStakes().length);
+        simBank = Arrays.copyOf(data.getCashBalances(), data.getCashBalances().length);
+
     }
 }
