@@ -106,7 +106,9 @@ public class TreeNode<T> { //} implements Iterable<TreeNode<T>> {
     }
 
     public boolean isRoot() {
-        return name == "root";
+        boolean rBool = (name == "root");
+        System.out.println("rBool is: " + rBool);
+        return (name == "root");
     }
 
     public TreeNode<T> findChild(int[] intArray) {
@@ -130,14 +132,22 @@ public class TreeNode<T> { //} implements Iterable<TreeNode<T>> {
     }
 
     public TreeNode<T> findChild(int[] inPocket, int[] inBoard, boolean isRoot) {
+
+        if(this.children.size() == 0) {
+            System.out.println("findChild is returning because there are 0 children");
+            return null;
+        }
+
         for(TreeNode t : this.children) {
             if(isRoot) {
+                System.out.println("findChild evaluted that this is root");
                 if(Arrays.equals(t.getPocket(), inPocket)) {
                     return t;
                 } else {
                     return null;
                 }
             } else {
+                System.out.println("findChild evaluated that this is not root");
                 if(Arrays.equals(t.getBoard(), inBoard)) {
                     return this;
                 } else {
@@ -146,6 +156,7 @@ public class TreeNode<T> { //} implements Iterable<TreeNode<T>> {
             }
         }
 
+        System.out.println("findChild is returning because something went wrong!");
         return null;
     }
 

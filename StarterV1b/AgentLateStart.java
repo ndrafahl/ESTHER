@@ -12,7 +12,7 @@ public class AgentLateStart extends Player {
     private TreeNode root;
     private TreeNode currentNode;
     private boolean simulate;
-    private List<TreeNode> queue;
+    private LinkedList<TreeNode> queue;
 
     // Local Variables Created from TableData
     private int[] tempBoard;
@@ -40,6 +40,11 @@ public class AgentLateStart extends Player {
     public String getAction(TableData data) {
         generateLocalData(data);
 
+        // simulate should only be true if GameManager is calling getAction(), otherwise GameManagerSim is calling this.
+        if(simulate) {
+            queue.add(currentNode);
+        }
+
         // Display what this agent's current hand is to console for testing.
         System.out.println("LateStart's pocket is :");
         System.out.print(EstherTools.intCardToStringCard(data.getPocket()[0]) + " ");
@@ -53,16 +58,15 @@ public class AgentLateStart extends Player {
 
         // Print to console to verify that we're starting a "new" game.
         //System.out.println("Starting a new game from round " + data.getBettingRound());
-     
-    	//TreeNode tempNode = new TreeNode(data.getPocket(), data.getBoard());
-        TreeNode tempNode = root.findChild(tempPocket);
+
+        TreeNode tempNode = currentNode.findChild(tempPocket, tempBoard, currentNode.isRoot());
 
         if(tempNode == null) {
             System.out.println("No node found under root.");
             tempNode = new TreeNode(tempPocket, tempBoard);
             root.addChild(tempNode);
         } else {
-            System.out.println("Node found under root!:");
+            System.out.println("Node found under root!");
         }
     	//root.addChild(tempNode);
         System.out.println("roots children count: " + root.getNumOfChildren());
@@ -125,4 +129,14 @@ public class AgentLateStart extends Player {
         simBank = Arrays.copyOf(data.getCashBalances(), data.getCashBalances().length);
 
     }
+
+    private void backPropagate() {
+        TreeNode backNode;
+
+        while(!queue.isEmpty()) {
+            backNode = queue.getLast();
+            System.out.println(backNode.getDepth());
+            queue.removeLast();
+        }
+    }   
 }
