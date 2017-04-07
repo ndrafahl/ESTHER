@@ -14,3 +14,6 @@ hs_err_pid*
 # .xml files
 vcs.xml
 workspace.xml
+
+# test.txt file that Nick uses for testing
+test.txt

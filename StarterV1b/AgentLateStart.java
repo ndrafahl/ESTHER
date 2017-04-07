@@ -24,6 +24,8 @@ public class AgentLateStart extends Player {
     private int[] simPlayerStakes;
     private int[] simBank;
 
+    private int lastBoardSize;
+
     public AgentLateStart (int num) {
         this.num = num;
 	    root = new TreeNode("root");
@@ -39,6 +41,8 @@ public class AgentLateStart extends Player {
 
     @Override
     public String getAction(TableData data) {
+        //TODO:  Need to retain the currentNode if we are being called from the same round in the game, rather than switching tempNode into currentNode
+        System.out.println("Entering getAction for AgentLateStart");
         generateLocalData(data);
 
         // simulate should only be true if GameManager is calling getAction(), otherwise GameManagerSim is calling this.
@@ -57,20 +61,28 @@ public class AgentLateStart extends Player {
         System.out.print("LateStart's sorted pocket in Int is: ");
         System.out.println(tempPocket[0] + " " + tempPocket[1]);
 
+        System.out.println("Board size is currently: " + data.getBoard().length);
+
         // Print to console to verify that we're starting a "new" game.
         //System.out.println("Starting a new game from round " + data.getBettingRound());
 
         TreeNode tempNode = currentNode.findChild(tempPocket, tempBoard, currentNode.isRoot());
 
         if(tempNode == null) {
-            System.out.println("No node found under root.");
+            System.out.println("No node found under root, creating new node.");
             tempNode = new TreeNode(tempPocket, tempBoard);
-            root.addChild(tempNode);
+            //root.addChild(tempNode);
+            currentNode.addChild(tempNode);
+            System.out.println("currentNodes depth is: " + currentNode.getDepth() + " | tempNodes depth is: " + tempNode.getDepth());
         } else {
             System.out.println("Node found under root!");
+            System.out.println("currentNodes depth is: " + currentNode.getDepth() + " | tempNodes depth is: " + tempNode.getDepth());
+
         }
     	//root.addChild(tempNode);
-        System.out.println("roots children count: " + root.getNumOfChildren());
+        //System.out.println("roots children count: " + root.getNumOfChildren());
+
+        currentNode = tempNode;
 
         // Overwrite the "AgentLateStart" agent with a random player agent.  Later we need to change this to be the MCTS agent.
         // If we don't do this, we'll just recursively recreate a game each time til we run out of memory.
@@ -84,6 +96,7 @@ public class AgentLateStart extends Player {
 
             // Play the simulated game, only one "hand"
             int[] end = g.playGame(data);
+            backPropagate();
             simulate = true;
             
 
@@ -99,6 +112,7 @@ public class AgentLateStart extends Player {
         } else {
             // Code pulled from AgentRandomPlayer.  Return a random action so we can get on to the next round.  This will be updated to be based on whatever the
             // MCTS Agent decides to return based on the Algorithm.
+            queue.add(currentNode);
             String pull = data.getValidActions();
             String[] choices = pull.split(",");
             Random randomGenerator = new Random();
@@ -106,6 +120,7 @@ public class AgentLateStart extends Player {
             return choices[index];
         }
 
+        // This should only occur after the simulation has completed.
         String pull = data.getValidActions();
         String [] choices = pull.split(",");
         Random randomGenerator = new Random();
@@ -128,11 +143,12 @@ public class AgentLateStart extends Player {
         simWhosIn = Arrays.copyOf(data.getWhosIn(), data.getWhosIn().length);
         simPlayerStakes = Arrays.copyOf(data.getPlayerStakes(), data.getPlayerStakes().length);
         simBank = Arrays.copyOf(data.getCashBalances(), data.getCashBalances().length);
-
     }
 
     private void backPropagate() {
         TreeNode backNode;
+
+        currentNode = queue.getFirst();
 
         while(!queue.isEmpty()) {
             backNode = queue.getLast();
