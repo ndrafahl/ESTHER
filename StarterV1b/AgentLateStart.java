@@ -2,6 +2,7 @@ import java.util.Arrays;
 import java.util.Random;
 import java.util.List;
 import java.util.LinkedList;
+import java.io.*;
 
 /**
  * Created by Nick Drafahl on 2/13/2017.
@@ -158,5 +159,36 @@ public class AgentLateStart extends Player {
             System.out.println(backNode.getDepth());
             queue.removeLast();
         }
-    }   
+    }
+
+    public void writeTree(){
+        try{
+            FileOutputStream fileOut = new FileOutputStream("treenode.ser");
+            ObjectOutputStream out = new ObjectOutputStream(fileOut);
+            out.writeObject(root);
+            out.close();
+            fileOut.close();
+            System.out.println("Tree has been saved in treenode.ser");
+        }catch(IOException i) {
+            i.printStackTrace();
+        }
+    }
+
+    public void readTree(){
+        //TreeNode x = null;
+        try {
+            FileInputStream fileIn = new FileInputStream("treenode.ser");
+            ObjectInputStream in = new ObjectInputStream(fileIn);
+            root = (TreeNode) in.readObject(); //assigns root as previous root
+            in.close();
+            fileIn.close();
+        }catch(IOException i) {
+            i.printStackTrace();
+            return;
+        }catch(ClassNotFoundException e) {
+            System.out.println("TreeNode class not found");
+            e.printStackTrace();
+            return;
+        }
+    }
 }

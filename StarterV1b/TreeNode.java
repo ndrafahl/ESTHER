@@ -9,7 +9,7 @@ import java.util.Arrays;
  */
 
 
-public class TreeNode<T> { //} implements Iterable<TreeNode<T>> {
+public class TreeNode<T> implements java.io.Serializable {
 
     private T data;
     private TreeNode<T> parent;
