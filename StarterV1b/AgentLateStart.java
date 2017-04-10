@@ -46,6 +46,7 @@ public class AgentLateStart extends Player {
 
         // simulate should only be true if GameManager is calling getAction(), otherwise GameManagerSim is calling this.
         if(simulate) {
+            System.out.println("Emplacing into queue with depth of: " + currentNode.getDepth());
             queue.add(currentNode);
         }
 
@@ -90,6 +91,7 @@ public class AgentLateStart extends Player {
         if(simulate) {
             simulate = false;
             // Play the Simulation of the game.
+            queue.add(currentNode);
             GameManagerSim g = new GameManagerSim(simPlayers, dealer, true, limits, 3, 1,
                     simWhosIn, simPlayerStakes, simBank, data);
 
@@ -111,6 +113,7 @@ public class AgentLateStart extends Player {
         } else {
             // Code pulled from AgentRandomPlayer.  Return a random action so we can get on to the next round.  This will be updated to be based on whatever the
             // MCTS Agent decides to return based on the Algorithm.
+            System.out.println("Emplacing into queue (else) with depth of: " + currentNode.getDepth());
             queue.add(currentNode);
             String pull = data.getValidActions();
             String[] choices = pull.split(",");
@@ -149,6 +152,7 @@ public class AgentLateStart extends Player {
 
         currentNode = queue.getFirst();
 
+        System.out.println("\nPrinting nodes visited:");
         while(!queue.isEmpty()) {
             backNode = queue.getLast();
             System.out.println(backNode.getDepth());
