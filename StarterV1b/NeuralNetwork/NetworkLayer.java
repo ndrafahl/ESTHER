@@ -8,16 +8,10 @@ public abstract class NetworkLayer {
 
     protected ArrayList<Neuron> layerArray;
     protected double[] outputArray;
-    protected int x;
+    protected int layerSize;
 
-
-    public int layerCount(){return layerArray.size();}
 
     public double[] getNeuronLayerOutputs(){return outputArray;}
-
-    public Neuron getNeuron(int index){return layerArray.get(index);}
-
-
 
 
 }

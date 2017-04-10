@@ -15,7 +15,7 @@ import java.util.ArrayList;
  * the button
  *
  */
-public class GameManager {
+public class GameManagerSim {
 
     //parameters needed at construction
     private final Player[] players;
@@ -43,12 +43,14 @@ public class GameManager {
     private final ArrayList<String>[] handActions = (ArrayList<String>[])new ArrayList[5];
 
 
-    
+
     /*
-     The main constructor for this class requires that five things be provided
+     The main constructor for this class requires that ten things be provided
      */
-    public GameManager(Player[] players, Dealer dealer, boolean debug,
-            int[] bets, int raiseLimit, int hands) {
+
+    public GameManagerSim(Player[] players, Dealer dealer, boolean debug,
+                          int[] bets, int raiseLimit, int hands, boolean[] whosIn,
+                          int[] playerStakesIn, int[] bankIn, TableData data) {
         this.players = players;
         this.dealer = dealer;
         this.debug = debug;
@@ -57,33 +59,19 @@ public class GameManager {
         this.raiseLimit = raiseLimit;
         this.hands = hands;
 
-        gameLevelSetup();
+        gameLevelSetup(whosIn, playerStakesIn, bankIn, data);
     }
 
-    public GameManager(Player[] players, Dealer dealer, boolean debug) {
-        this.players = players;
-        this.dealer = dealer;
-        this.debug = debug;
-
-        int[] limits = {1, 1, 1, 2, 2};
-        this.bets = limits;
-        this.raiseLimit = 3;
-        this.hands = 10 * players.length; // Controls the amount of hands played in a single "game"
-
-        gameLevelSetup();
-    }
-
-    public int[] playGame() {
-        System.out.println("Let's play cards!");
+    public int[] playGame(TableData data) {
+        System.out.println("Playing Game from GameManagerSim");
 
         //Loop for each hand
         for (handNumber = 1; handNumber < hands + 1; handNumber++) {
-            if (debug) { System.out.println("GameManager is on game: " + handNumber + "\n"); }
-            handLevelSetup(handNumber);
+            handLevelSetup(data);
 
             if (debug) {
                 System.out.println("DEBUG is on.");
-                System.out.println("Button with player " + (button + 1) );
+                System.out.println("Button with player " + (button) );
             }
 
             //Everyone ante
@@ -92,7 +80,7 @@ public class GameManager {
                 bank[x] -= bets[1];
                 handActions[0].add((x+1)+",ante");
                 if (debug) {
-                    System.out.print((x+1) + " ");
+                    System.out.print((x) + " ");
                     System.out.print("" + EstherTools.intCardToStringCard(dealer.getPocket(x)[0]));
                     System.out.println(" " + EstherTools.intCardToStringCard(dealer.getPocket(x)[1]));
                 }
@@ -109,7 +97,7 @@ public class GameManager {
 
             //Play the hand
             while (round < 4 && activePlayers > 1) {
-                manageBettingRound();
+                manageBettingRound(data);
             }
 
             //Figure out winner and send a reveal message
@@ -123,49 +111,40 @@ public class GameManager {
     }
 
     //private helper methods
-    private void gameLevelSetup() {
-        button = -1;
-        handNumber = 0;
-        stillIn = new boolean[players.length];
-        playerStakes = new int[players.length];
-        bank = new int[players.length];
-        for (int x = 0; x < bank.length; x++) {
-            bank[x] = 0;
-        }
+    private void gameLevelSetup(boolean[] whosIn, int[] playerStakesIn, int[] bankIn, TableData data) {
+        button = data.getButton();
+        stillIn = whosIn;
+        playerStakes = playerStakesIn;
+        bank = bankIn;
     }
 
-    private void handLevelSetup(int hand) {
-        button = (button + 1) % players.length;
-        for (int x = 0; x < players.length; x++) {
-            stillIn[x] = true;
-            players[x].newHand(hand, bank);
-        }
-        dealer.shuffle();
-        pot = 0;
-        activePlayers = players.length;
-        round = 0;
-        for (int x=0;x<5;x++) {
-            handActions[x] =  new ArrayList<>();
+    private void handLevelSetup(TableData data) {
+        pot = data.getTotalPot();
+        activePlayers = stillIn.length;
+        round = data.getBettingRound();
+
+        for (int x = 0; x < 5; x++) {
+            handActions[x] = new ArrayList<>();
         }
 
     }
 
-    private void manageBettingRound() {
+    private void manageBettingRound(TableData data) {
         if (debug) {
-            System.out.println("Dealing the next set of cards");
+            System.out.println("Entering manageBettingRound for round " + data.getBettingRound());
         }
         String response;
         round++;
         raisesLeft = raiseLimit + 1;
         int actionsNeeded = activePlayers;
-        currentBettor = (button + 1) % players.length;
-        tableStakes = 0;
+        currentBettor = data.getCurrentBettor();
+        tableStakes = data.getTablePot();
         for (int x = 0; x < playerStakes.length; x++) {
             playerStakes[x] = 0;
         }
 
         while (activePlayers > 1 && actionsNeeded > 0) {
-            if (debug) { System.out.println("Action to "+currentBettor); }
+            System.out.println("Action to "+currentBettor);
             if (stillIn[currentBettor]) {
                 String valid = "fold,";
                 if (raisesLeft > raiseLimit) {
@@ -200,8 +179,10 @@ public class GameManager {
                 );
 
                 response = players[currentBettor].getAction(td);
-                if (debug) { System.out.println("GameManager got response from " + players[currentBettor].getScreenName()
-                        + "(" + currentBettor + ")");; }
+                System.out.println("GameManagerSim got response from " + players[currentBettor].getScreenName()
+                    + "(" + currentBettor + ")");
+                System.out.println("Response was : " + response + "\n");
+                players[currentBettor].getScreenName();
 
                 if (!valid.contains(response)) {
                     System.out.println("ERROR");
@@ -248,8 +229,8 @@ public class GameManager {
                 response = "out";
             }
 
-            handActions[round].add("(" + (currentBettor + 1) + "," + response + ")");
-
+            //handActions[round].add("(" + (currentBettor + 1) + "," + response + ")");
+            handActions[round].add("(" + (currentBettor) + "," + response + ")");
             currentBettor = (currentBettor + 1) % players.length;
 
         }
@@ -302,9 +283,9 @@ public class GameManager {
                 System.out.println("But we had a count of " + winners.size());
             }
         } else {
-         //If there are multiple players in the game we must go through reveals
+            //If there are multiple players in the game we must go through reveals
 
-            //First, the mustShowFirst is the first player in to the 
+            //First, the mustShowFirst is the first player in to the
             //left of the lastToCall
             int remaining = players.length - 1;
             int mustShowFirst = (lastToCall + 1) % players.length;
