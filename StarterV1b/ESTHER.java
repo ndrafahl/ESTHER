@@ -107,8 +107,9 @@ public class ESTHER {
         }
 
         if (mode == 4) {
+            TrainingFunction trainer = new TrainingFunction();
             try {
-                TrainingFunction.generateData("testData");
+                trainer.generateData("new250LimitResultsWithVarRound.arff");
             }
             catch (IOException e){
                 throw e;

@@ -5,13 +5,8 @@ package NeuralNetwork;
  */
 public interface Neuron {
 
-    public void setBias(double biasWeight);
-
-    public double getBias();
-
     public void computeOutput(double[] inputs);
 
     public double getOutput();
 
-    public double[] getWeights();
 }
