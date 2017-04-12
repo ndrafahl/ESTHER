@@ -23,13 +23,8 @@ public class ESTHER {
         //3 = "tournament" where there are N GAMES played,
         //         after each GAME the players shift one seat and the GAME
         //         is repeated (with the same hands from the previous GAME)
-<<<<<<< Updated upstream
 
-        int mode = 4;
-      
-=======
         int mode = 5;
->>>>>>> Stashed changes
 
 
         Player[] players = new Player[6];
