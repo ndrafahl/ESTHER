@@ -24,8 +24,7 @@ public class ESTHER {
         //         after each GAME the players shift one seat and the GAME
         //         is repeated (with the same hands from the previous GAME)
 
-        int mode = 4;
-      
+        int mode = 5;
 
 
         Player[] players = new Player[6];
@@ -117,6 +116,14 @@ public class ESTHER {
 
 
         }
+
+        if (mode == 5)
+            try {
+                PreFlopDecision.buildPocketArray(5);
+            }
+            catch (IOException e){
+                throw e;
+            }
 
     }
 

@@ -88,29 +88,88 @@ public class NeuralNetworkPlayer extends Player {
     @Override
     public String getAction(TableData data){              //STILL UNDER CONSTRUCTION!!! THE InputData CLASS STILL NEEDS TO BE IMPLEMENTED.
         String pull = data.getValidActions();
+
+        if(data.getBettingRound() == 1){
+            int[] pocketCards = data.getPocket();
+            int pocket1Rank = pocketCards[0] % 13;
+            int pocket2Rank = pocketCards[1] % 13;
+            int pocket1Suit = pocketCards[0] / 13;
+            int pocket2Suit = pocketCards[1] / 13;
+            int arrayIndex;
+            double winRate;
+
+            if (pocket1Suit == pocket2Suit) {
+                if (pocket1Rank < pocket2Rank) {
+                    arrayIndex = (pocket1Rank * 13) + pocket2Rank;
+                } else {
+                    arrayIndex = (pocket2Rank * 13) + pocket1Rank;
+                }
+            } else {
+                if (pocket1Rank < pocket2Rank) {
+                    arrayIndex = (pocket2Rank * 13) + pocket1Rank;
+                } else {
+                    arrayIndex = (pocket1Rank * 13) + pocket2Rank;
+                }
+            }
+
+            winRate = winRateArray[arrayIndex];
+            String decision = "fold"
+            if (winRate <.4){
+                decision = "fold"
+            }
+            else if (winRate > .4){
+                decision = "call"
+            }
+            else if (winRate > .7){
+                decision = "bet"
+            }
+            if (decision == "fold" && pull.contains("check")) {
+                return "check";
+            } else if (pull.contains(decision)) {
+                return decision;
+            } else if (decision == "bet" && pull.contains("raise")) {
+                return "raise";
+            } else if (decision == "bet" && !pull.contains("raise")) {
+                return "call";
+            } else if (decision == "call" && pull.contains("check")) {
+                return "check";
+            } else {
+                return decision;
+            }
+        }
+=======
         int neuronIndex = 0;
 
         InputData inputData = new InputData(data);
 
         String decision = neuralNetwork.makeDecision(inputData.getInputList());
 
-        if(decision == "fold" && pull.contains("check")){
-            return "check";
+
         }
-        else if(pull.contains(decision)){
-            return decision;
-        }
-        else if(decision == "bet" && pull.contains("raise")){
-            return "raise";
-        }
-        else if(decision == "bet" && !pull.contains("raise")){
-            return "call";
-        }
-        else if(decision == "call" && pull.contains("check")){
-            return "check";
-        }
-        else{
-            return "fold";
+
+        else {
+            int neuronIndex = 0;
+            if (neuralList.size() > 1) {
+                neuronIndex = findNeuron(data.getPocket());
+            }
+
+            InputData inputData = new InputData(data);
+
+            String decision = neuralList.get(neuronIndex).makeDecision(inputData.getInputList());
+
+            if (decision == "fold" && pull.contains("check")) {
+                return "check";
+            } else if (pull.contains(decision)) {
+                return decision;
+            } else if (decision == "bet" && pull.contains("raise")) {
+                return "raise";
+            } else if (decision == "bet" && !pull.contains("raise")) {
+                return "call";
+            } else if (decision == "call" && pull.contains("check")) {
+                return "check";
+            } else {
+                return "fold";
+            }
         }
     }
 
