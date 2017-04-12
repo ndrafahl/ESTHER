@@ -43,12 +43,17 @@ public class InputLayer extends NetworkLayer {
     /********************************************************
      * Methods
      *
-     * This Method is still under construction depending on how
-     * we implement InputData.
+     * This Method takes in a list of inputs from the neural network
+     * and converts it to a double and sends that input to the neuron.
      *******************************************************/
 
 
     public void beginComputing(int[] input){
-        //UNDER CONSTRUCTION!!!
+        for(int i = 0; i < layerSize; i++){
+            double[] temp = new double[1];
+            temp[0] = Double.valueOf(input[i]);
+            layerArray.get(i).computeOutput(temp);
+            outputArray[i] = layerArray.get(i).getOutput();
+        }
     }
 }
