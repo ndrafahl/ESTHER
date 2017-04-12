@@ -53,6 +53,8 @@ public class ESTHER {
             }
         }
         if (mode == 2) {
+            //playerLateStart = players[2];
+            //players[2].readTree();
             Dealer dealer = new Dealer(players.length);
             GameManager g = new GameManager(players, dealer, true);
             double startTime = System.currentTimeMillis();
