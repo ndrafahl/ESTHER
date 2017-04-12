@@ -405,4 +405,8 @@ public class GameManager {
         pot += amount;
         playerStakes[currentBettor] = tableStakes;
     }
+
+    public int getBankroll(int playerNumber){
+        return bank[playerNumber];
+    }
 }

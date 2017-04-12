@@ -22,8 +22,8 @@ public class NeuralNetworkDAO  {
      * @throws IOException
      */
 
-    public ArrayList<NeuralNetworkBluePrint> loadNeuralNetworkList(String filePath) throws IOException{
-        ArrayList<NeuralNetworkBluePrint> neuralNetworkList = new ArrayList<>(169);
+    public NeuralNetworkBluePrint loadNeuralNetworkList(String filePath) throws IOException{
+        NeuralNetworkBluePrint neuralNetworkBluePrint;
         Scanner fileIn;
         int x, y, numOfInputs, numOfHiddenLayers, numOfOutputs;
         int[] numOfNeuronsPerLayer;
@@ -34,66 +34,64 @@ public class NeuralNetworkDAO  {
 
         try{
             fileIn = new Scanner(new FileInputStream(filePath));
-            while(fileIn.hasNext()){            //This line checks if there is another neural network to be constructed from the file.
-                numOfInputs = Integer.valueOf(fileIn.nextLine());   //The first line of each neural network is the number of input neurons.
-                inputWeights = new double[numOfInputs][];           //Constructs a double array the size of the number of inputs. This stores an array of each neuron weights.
-                inputBias = new double[numOfInputs];                //Same as above but stores the bias for each input neuron.
-                for(x = 0; x < numOfInputs; x++){                   //This for-loop reads the input weights into an array of arrays.
-                    temp = fileIn.nextLine().split(",");
-                    inputWeights[x][0] = Double.valueOf(temp[x]);
-                }
-                temp = fileIn.nextLine().split(",");
-                for(x = 0; x < numOfInputs; x++){                   //This for-loop takes the string bias and turn them to doubles and places them in the input bias array.
-                    inputBias[x] = Double.valueOf(temp[x]);
-                }
-                numOfHiddenLayers = Integer.valueOf(fileIn.nextLine());   //This saves the number of hidden layers.
-                temp = fileIn.nextLine().split(",");
-                numOfNeuronsPerLayer = new int[numOfHiddenLayers];       //Number of neurons per hidden layer.
-                for (x = 0; x < numOfHiddenLayers; x++){
-                    numOfNeuronsPerLayer[x] = Integer.valueOf(temp[x]);
-                }
-                hiddenLayerWeights = new double[numOfHiddenLayers][][];
-                for(x = 0; x < numOfHiddenLayers; x++){                  //Reads in the weights for each neuron in each hidden layer.
-                    for(y = 0; y < numOfNeuronsPerLayer[x]; y++){
-                        temp = fileIn.nextLine().split(",");
-                        for (int z = 0; z < temp.length; z++) {
-                            hiddenLayerWeights[x][y][z] = Double.valueOf(temp[z]);
-                        }
-                    }
-                }
-                hiddenLayerBias = new double[numOfHiddenLayers][];
-                for(x = 0; x < numOfHiddenLayers; x++){                    //Reads in the bias for each neuron in each hidden layer.
-                    temp = fileIn.nextLine().split(",");
-                    for(y = 0; y < temp.length; y++){
-                        hiddenLayerBias[x][y] = Double.valueOf(temp[y]);
-                    }
-                }
-                numOfOutputs = Integer.valueOf(fileIn.nextLine());          //Output layer size.
-                outputWeights = new double[numOfOutputs][];
-                for(x = 0; x < numOfOutputs; x++){                         //Reads the weights for each neuron in the output layer.
-                    temp = fileIn.nextLine().split(",");
-                    for (y = 0; y < temp.length; y++){
-                        outputWeights[x][y] = Double.valueOf(temp[y]);
-                    }
-                }
-                outputBias = new double[numOfOutputs];
-                temp = fileIn.nextLine().split(",");
-                for(x = 0; x < numOfOutputs; x++){                         //Reads the bias for each neuron in the output layer.
-                    outputBias[x] = Double.valueOf(temp[x]);
-                }
-                neuralNetworkList.add(new NeuralNetworkBluePrint(numOfInputs, inputWeights, inputBias,
-                        numOfHiddenLayers, numOfNeuronsPerLayer, hiddenLayerWeights,
-                        hiddenLayerBias, numOfOutputs, outputWeights, outputBias));      //After all the information for that neural network has been read from the file it is used to construct a blueprint and placed in an array of blueprints.
-            }
-
-            fileIn.close();
         }
         catch (IOException e){
             throw e;
         }
+        //This line checks if there is another neural network to be constructed from the file.
+        numOfInputs = Integer.valueOf(fileIn.nextLine());   //The first line of each neural network is the number of input neurons.
+        inputWeights = new double[numOfInputs][];           //Constructs a double array the size of the number of inputs. This stores an array of each neuron weights.
+        inputBias = new double[numOfInputs];                //Same as above but stores the bias for each input neuron.
+        for (x = 0; x < numOfInputs; x++) {                   //This for-loop reads the input weights into an array of arrays.
+            temp = fileIn.nextLine().split(",");
+            inputWeights[x][0] = Double.valueOf(temp[x]);
+        }
+        temp = fileIn.nextLine().split(",");
+        for (x = 0; x < numOfInputs; x++) {                   //This for-loop takes the string bias and turn them to doubles and places them in the input bias array.
+            inputBias[x] = Double.valueOf(temp[x]);
+        }
+        numOfHiddenLayers = Integer.valueOf(fileIn.nextLine());   //This saves the number of hidden layers.
+        temp = fileIn.nextLine().split(",");
+        numOfNeuronsPerLayer = new int[numOfHiddenLayers];       //Number of neurons per hidden layer.
+        for (x = 0; x < numOfHiddenLayers; x++) {
+            numOfNeuronsPerLayer[x] = Integer.valueOf(temp[x]);
+        }
+        hiddenLayerWeights = new double[numOfHiddenLayers][][];
+        for (x = 0; x < numOfHiddenLayers; x++) {                  //Reads in the weights for each neuron in each hidden layer.
+            for (y = 0; y < numOfNeuronsPerLayer[x]; y++) {
+                temp = fileIn.nextLine().split(",");
+                for (int z = 0; z < temp.length; z++) {
+                    hiddenLayerWeights[x][y][z] = Double.valueOf(temp[z]);
+                }
+            }
+        }
+        hiddenLayerBias = new double[numOfHiddenLayers][];
+        for (x = 0; x < numOfHiddenLayers; x++) {                    //Reads in the bias for each neuron in each hidden layer.
+            temp = fileIn.nextLine().split(",");
+            for (y = 0; y < temp.length; y++) {
+                hiddenLayerBias[x][y] = Double.valueOf(temp[y]);
+            }
+        }
+        numOfOutputs = Integer.valueOf(fileIn.nextLine());          //Output layer size.
+        outputWeights = new double[numOfOutputs][];
+        for (x = 0; x < numOfOutputs; x++) {                         //Reads the weights for each neuron in the output layer.
+            temp = fileIn.nextLine().split(",");
+            for (y = 0; y < temp.length; y++) {
+                outputWeights[x][y] = Double.valueOf(temp[y]);
+            }
+        }
+        outputBias = new double[numOfOutputs];
+        temp = fileIn.nextLine().split(",");
+        for (x = 0; x < numOfOutputs; x++) {                         //Reads the bias for each neuron in the output layer.
+            outputBias[x] = Double.valueOf(temp[x]);
+        }
+        neuralNetworkBluePrint = new NeuralNetworkBluePrint(numOfInputs, inputWeights, inputBias,
+                numOfHiddenLayers, numOfNeuronsPerLayer, hiddenLayerWeights,
+                hiddenLayerBias, numOfOutputs, outputWeights, outputBias);
+            fileIn.close();
 
 
-        return neuralNetworkList;
+        return neuralNetworkBluePrint;
     }
 
     /*******************************************************************************

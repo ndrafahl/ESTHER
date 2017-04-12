@@ -14,8 +14,8 @@ import java.util.ArrayList;
  */
 public class NeuralNetworkPlayer extends Player {
 
-    private ArrayList<NeuralNetworkBluePrint> bluePrintArrayList;
-    private ArrayList<NeuralNetwork> neuralList;
+    private NeuralNetworkBluePrint bluePrint;
+    private NeuralNetwork neuralNetwork;
     boolean suited;
     int card1Rank, card2Rank, card1Suit, card2Suit;
     String name;
@@ -32,9 +32,9 @@ public class NeuralNetworkPlayer extends Player {
      ***********************************************************************/
 
     public NeuralNetworkPlayer(String name){
-        NeuralNetworkBluePrint bluePrint = new NeuralNetworkBluePrint(25, 3);
-        neuralList = new ArrayList<NeuralNetwork>(1);
-        neuralList.add(new NeuralNetwork(bluePrint));
+        bluePrint = new NeuralNetworkBluePrint(25, 3);
+        neuralNetwork = new NeuralNetwork(bluePrint);
+
         this.name = name;
 
     }
@@ -52,15 +52,12 @@ public class NeuralNetworkPlayer extends Player {
         NeuralNetworkDAO neuralNetworkDAO = new NeuralNetworkDAO();
         this.name = name;
         try {
-            bluePrintArrayList = neuralNetworkDAO.loadNeuralNetworkList(fileName);
+            bluePrint = neuralNetworkDAO.loadNeuralNetworkList(fileName);
         }
         catch (IOException e){
             throw e;
         }
-        neuralList = new ArrayList<NeuralNetwork>(bluePrintArrayList.size());
-        for(int i = 0; i < bluePrintArrayList.size(); i++){
-            neuralList.add(new NeuralNetwork(bluePrintArrayList.get(i)));
-        }
+        neuralNetwork = new NeuralNetwork(bluePrint);
     }
 
     /*******************************************************************************
@@ -73,8 +70,14 @@ public class NeuralNetworkPlayer extends Player {
 
     public NeuralNetworkPlayer(String name, NeuralNetworkBluePrint bluePrint){
         this.name = name;
-        neuralList = new ArrayList<NeuralNetwork>(1);
-        neuralList.add(new NeuralNetwork(bluePrint));
+        neuralNetwork = new NeuralNetwork(bluePrint);
+        this.bluePrint = bluePrint;
+    }
+
+    public NeuralNetworkPlayer(NeuralNetworkBluePrint bluePrint){
+        name = "Samuel";
+        neuralNetwork = new NeuralNetwork(bluePrint);
+        this.bluePrint = bluePrint;
     }
 
     @Override
@@ -85,6 +88,7 @@ public class NeuralNetworkPlayer extends Player {
     @Override
     public String getAction(TableData data){              //STILL UNDER CONSTRUCTION!!! THE InputData CLASS STILL NEEDS TO BE IMPLEMENTED.
         String pull = data.getValidActions();
+
         if(data.getBettingRound() == 1){
             int[] pocketCards = data.getPocket();
             int pocket1Rank = pocketCards[0] % 13;
@@ -132,6 +136,14 @@ public class NeuralNetworkPlayer extends Player {
             } else {
                 return decision;
             }
+        }
+=======
+        int neuronIndex = 0;
+
+        InputData inputData = new InputData(data);
+
+        String decision = neuralNetwork.makeDecision(inputData.getInputList());
+
 
         }
 
