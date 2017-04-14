@@ -143,7 +143,7 @@ public class PreFlopDecision {
 
             FileWriter fileOut = new FileWriter(fileName);
             for (int i = 0; i < 169; i++) {
-                fileOut.write(String.valueOf(winRateArray[i]) + ",");
+                fileOut.write(String.valueOf(winRateArray[i]) + "\r\n");
             }
             fileOut.close();
         }

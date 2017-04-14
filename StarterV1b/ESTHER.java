@@ -106,8 +106,9 @@ public class ESTHER {
         }
 
         if (mode == 4) {
+            TrainingFunction trainer = new TrainingFunction();
             try {
-                TrainingFunction.generateData("testData");
+                trainer.generateData("new250LimitResultsWithVarRound.arff");
             }
             catch (IOException e){
                 throw e;
@@ -116,13 +117,13 @@ public class ESTHER {
 
         }
 
-        if (mode == 5)
+        if (mode == 5) {
             try {
                 PreFlopDecision.buildPocketArray(5);
-            }
-            catch (IOException e){
+            } catch (IOException e) {
                 throw e;
             }
+        }
 
     }
 
