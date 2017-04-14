@@ -71,7 +71,7 @@ public class AgentLateStart extends Player {
         TreeNode tempNode = currentNode.findChild(tempPocket, tempBoard, currentNode.isRoot());
 
         if(tempNode == null) {
-            System.out.println("No node found under root, creating new node.");
+            System.out.println("No node found from node at depth " + currentNode.getDepth() + ", creating new node.");
             tempNode = new TreeNode(tempPocket, tempBoard);
             //root.addChild(tempNode);
             currentNode.addChild(tempNode);
