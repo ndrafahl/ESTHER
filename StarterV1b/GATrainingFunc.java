@@ -1,6 +1,7 @@
 import NeuralNetwork.NeuralNetworkBluePrint;
 
-import java.util.ArrayList;
+import java.io.IOException;
+import java.util.Arrays;
 import java.util.Random;
 import static java.lang.Integer.min;
 
@@ -92,18 +93,81 @@ public class GATrainingFunc {
         int first;
         int second;
         NeuralNetworkBluePrint[] tempBlueprintList = new NeuralNetworkBluePrint[populationSize];
+        NeuralNetworkBluePrint tempBluePrint, previousBlueprint;
+
         for(int i = 0; i < mutationCount; i++){
-            //mutate blueprint and place it in temp
+            first = rand.nextInt();
+            second = rand.nextInt();
+            if(first > second){
+                first = second;
+            }
+            previousBlueprint = networkArray[first];
+            tempBluePrint = copyBlueprint(previousBlueprint);
+
+
         }
         for(int i = 0; i < selectionCount; i++){
             first = rand.nextInt();
             second = rand.nextInt();
-            first = min(first, second);
+            if(first > second){
+                first = second;
+            }
             tempBlueprintList[mutationCount + i] = networkArray[first];
         }
         for(int i = 0; i < newBloodCount; i++){
             tempBlueprintList[mutationCount+selectionCount+i] = new NeuralNetworkBluePrint(40, 3);
         }
 
+    }
+
+    public NeuralNetworkBluePrint copyBlueprint(NeuralNetworkBluePrint previousBlueprint){
+        NeuralNetworkBluePrint tempBluePrint;
+        int numOfInputs, numOfHiddenLayers, numOfOutputs;
+        int[] numOfNeuronsPerLayer;
+        double[] inputBias, outputBias;
+        double[][] hiddenLayerBias, outputWeights, inputWeights;
+        double[][][] hiddenLayerWeights;
+        int arrayLength, arrayLength2;
+        double[][] temp2DArray;
+        double[][][] temp3DArray;
+
+        numOfInputs = previousBlueprint.getNumOfInputs();
+        numOfHiddenLayers = previousBlueprint.getNumOfHiddenLayers();
+        numOfOutputs = previousBlueprint.getNumOfOutputs();
+        numOfNeuronsPerLayer = Arrays.copyOf(previousBlueprint.getNumOfNeuronsPerLayer(), previousBlueprint.getNumOfNeuronsPerLayer().length);
+        inputBias = Arrays.copyOf(previousBlueprint.getInputBias(), previousBlueprint.getInputBias().length);
+        outputBias = Arrays.copyOf(previousBlueprint.getOutputBias(),previousBlueprint.getOutputBias().length);
+        temp2DArray = previousBlueprint.getHiddenLayerBias();
+        arrayLength = temp2DArray.length;
+        hiddenLayerBias = new double[arrayLength][];
+        for(int j = 0; j < arrayLength; j++){
+            hiddenLayerBias[j] = Arrays.copyOf(temp2DArray[j],temp2DArray[j].length);
+        }
+        temp2DArray = previousBlueprint.getOutputWeights();
+        arrayLength = temp2DArray.length;
+        outputWeights = new double[arrayLength][];
+        for(int j = 0; j < arrayLength; j++){
+            outputWeights[j] = Arrays.copyOf(temp2DArray[j],temp2DArray[j].length);
+        }
+        temp2DArray = previousBlueprint.getInputWeights();
+        arrayLength = temp2DArray.length;
+        inputWeights = new double[arrayLength][];
+        for(int j = 0; j < arrayLength; j++){
+            inputWeights[j] = Arrays.copyOf(temp2DArray[j],temp2DArray[j].length);
+        }
+        temp3DArray = previousBlueprint.getHiddenLayerWeights();
+        arrayLength = temp3DArray.length;
+        hiddenLayerWeights = new double[arrayLength][][];
+        for(int j = 0; j < arrayLength; j++){
+            arrayLength2 = temp3DArray[j].length;
+            temp2DArray = new double[arrayLength2][];
+            for(int k = 0; k < arrayLength2; k++){
+                temp2DArray[k] = Arrays.copyOf(temp3DArray[j][k], temp3DArray[j][k].length);
+            }
+            hiddenLayerWeights[j] = temp2DArray;
+        }
+        tempBluePrint = new NeuralNetworkBluePrint(numOfInputs, inputWeights, inputBias, numOfHiddenLayers, numOfNeuronsPerLayer,
+                hiddenLayerWeights, hiddenLayerBias, numOfOutputs, outputWeights, outputBias);
+        return tempBluePrint;
     }
 }
