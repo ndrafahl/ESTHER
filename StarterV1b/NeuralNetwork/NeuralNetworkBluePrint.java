@@ -1,6 +1,6 @@
 package NeuralNetwork;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Random;
 
 /**
@@ -21,7 +21,7 @@ import java.util.Random;
  */
 
 
-public class NeuralNetworkBluePrint {
+public class NeuralNetworkBluePrint implements Cloneable {
     private int numOfInputs, numOfHiddenLayers, numOfOutputs;
     private int[] numOfNeuronsPerLayer;
     private double[] inputBias, outputBias;
@@ -39,40 +39,23 @@ public class NeuralNetworkBluePrint {
         numOfInputs = inputSize;
         numOfOutputs = outputSize;
         numOfHiddenLayers = randLayers.nextInt();
-        inputWeights = new double[numOfInputs][1];
-        inputBias = new double[numOfInputs];
-        for(int x = 0; x < numOfInputs; x++){                          //This for-loop is creating random bias and weights for the input neurons.
-            inputBias[x] = Math.random() * (maxBias * 2) - maxBias;
-            inputWeights[x][0] = Math.random() * (maxWeight * 2) - maxWeight;
-        }
         numOfNeuronsPerLayer = new int[numOfHiddenLayers];
-        hiddenLayerBias = new double[numOfHiddenLayers][];
-        hiddenLayerWeights = new double[numOfHiddenLayers][][];
-        for(int x = 0; x < numOfHiddenLayers; x++){                    //This for-loop is creating random bias and weights for each of the hidden layer neurons.
+        for(int x = 0; x < numOfHiddenLayers; x++) {                    //This for-loop is creating random bias and weights for each of the hidden layer neurons.
             numOfNeuronsPerLayer[x] = randNeurons.nextInt();
-            for (int y = 0; y < numOfNeuronsPerLayer[x]; y++){
-                hiddenLayerBias[x][y] = Math.random() *  (maxBias * 2) - maxBias;
-                if(x > 0){                                              //This if-statement checks if it is the first hidden layer.
-                    for(int z = 0; z < numOfNeuronsPerLayer[x-1]; z++){  //If it is not the first layer it will look at the size of the layer before it and create that many random weights for each neuron.
-                        hiddenLayerWeights[x][y][z] = Math.random() * (maxWeight * 2) - maxWeight;
-                    }
-                }
-                else{
-                    for (int z = 0; z < inputSize; z++){              //If it is the first layer then it will look at the size of the input layer and create that may random neuron weights.
-                        hiddenLayerWeights[x][y][z] =  Math.random() * (maxWeight * 2) - maxWeight;
-                    }
-                }
-            }
         }
-        outputBias = new double[outputSize];
-        outputWeights = new double[outputSize][];
-        for (int x = 0; x < outputSize; x++){                        //This for-loop randomly creates a bias for each neuron in the output layer.
-            outputBias[x] = Math.random() *  (maxBias * 2) - maxBias;
-            for (int y = 0; y < numOfNeuronsPerLayer[numOfNeuronsPerLayer.length]; y++){     //This for-loop randomly create a weight for every neuron in the last hidden layer for each neuron in the output layer.
-                outputWeights[x][y] = Math.random() * (maxWeight * 2) - maxWeight;
-            }
-        }
+        generateNeuralNetwork();
     }
+
+    public NeuralNetworkBluePrint(int inputSize, int outputSize, int hiddenLayers, int[] neuronsPerLayer){
+        numOfInputs = inputSize;
+        numOfOutputs = outputSize;
+        numOfHiddenLayers = hiddenLayers;
+        numOfNeuronsPerLayer = neuronsPerLayer;
+        maxBias = 5;
+        maxWeight = 1;
+        generateNeuralNetwork();
+    }
+
 
     public NeuralNetworkBluePrint(int aNumOfInputs, double[][] aInputWeights, double[] aInputBias,
                                   int aNumOfHiddenLayers, int[] aNumOfNeuronsPerLayer, double[][][] aHiddenLayerWeights,
@@ -88,6 +71,65 @@ public class NeuralNetworkBluePrint {
         outputWeights = aOutputWeights;
         outputBias = aOutputBias;
     }
+
+
+    private void generateNeuralNetwork(){
+        inputWeights = new double[numOfInputs][1];
+        inputBias = new double[numOfInputs];
+        for(int x = 0; x < numOfInputs; x++){                          //This for-loop is creating random bias and weights for the input neurons.
+            inputBias[x] = Math.random() * (maxBias * 2) - maxBias;
+            inputWeights[x][0] = Math.random() * (maxWeight * 2) - maxWeight;
+        }
+        hiddenLayerBias = new double[numOfHiddenLayers][];
+        hiddenLayerWeights = new double[numOfHiddenLayers][][];
+        for(int x = 0; x < numOfHiddenLayers; x++){         //This for-loop is creating random bias and weights for each of the hidden layer neurons.
+            double[] biasTemp = new double[numOfNeuronsPerLayer[x]];
+            double[][] weigthTemp1 = new double[numOfNeuronsPerLayer[x]][];
+            for (int y = 0; y < numOfNeuronsPerLayer[x]; y++){
+                biasTemp[y] = Math.random() *  (maxBias * 2) - maxBias;
+                if(x > 0){      //This if-statement checks if it is the first hidden layer.
+                    double[] weightTemp2 = new double[numOfNeuronsPerLayer[x-1]];
+                    for(int z = 0; z < numOfNeuronsPerLayer[x-1]; z++){  //If it is not the first layer it will look at the size of the layer before it and create that many random weights for each neuron.
+                        weightTemp2[z] = Math.random() * (maxWeight * 2) - maxWeight;
+                    }
+                    weigthTemp1[y] = weightTemp2;
+                }
+                else{
+                    double[] weightTemp2 = new double[numOfInputs];
+                    for (int z = 0; z < numOfInputs; z++){              //If it is the first layer then it will look at the size of the input layer and create that may random neuron weights.
+                        weightTemp2[z] =  Math.random() * (maxWeight * 2) - maxWeight;
+                    }
+                    weigthTemp1[y] = weightTemp2;
+                }
+                hiddenLayerBias[x] = biasTemp;
+                hiddenLayerWeights[x] = weigthTemp1;
+            }
+        }
+        outputBias = new double[numOfOutputs];
+        outputWeights = new double[numOfOutputs][];
+        for (int x = 0; x < numOfOutputs; x++){                        //This for-loop randomly creates a bias for each neuron in the output layer.
+            outputBias[x] = Math.random() *  (maxBias * 2) - maxBias;
+            double[] temp = new double[numOfNeuronsPerLayer[numOfNeuronsPerLayer.length-1]];
+            for (int y = 0; y < numOfNeuronsPerLayer[numOfNeuronsPerLayer.length - 1]; y++){     //This for-loop randomly create a weight for every neuron in the last hidden layer for each neuron in the output layer.
+                temp[y] = Math.random() * (maxWeight * 2) - maxWeight;
+            }
+            outputWeights[x] = temp;
+        }
+    }
+
+    @Override
+    public NeuralNetworkBluePrint clone(){
+        return this;
+    }
+
+    public void copyArray(){
+        double[][] newInputWeights = new double[inputWeights.length][];
+        for(int i = 0; i < inputWeights.length; i++){
+            newInputWeights[i] = Arrays.copyOf(inputWeights[i], inputWeights[i].length);
+        }
+        inputWeights = newInputWeights;
+    }
+
 
     public double[] getInputBias() {
         return inputBias;
@@ -130,4 +172,8 @@ public class NeuralNetworkBluePrint {
     }
 
     // We still need to create the methods for mutating this Neural Network
+
+    public void modifyInputWeight(int neuronIndex, double newWeight){
+        inputWeights[neuronIndex][0] = newWeight;
+    }
 }

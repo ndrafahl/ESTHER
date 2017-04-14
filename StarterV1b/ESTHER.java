@@ -53,6 +53,8 @@ public class ESTHER {
             }
         }
         if (mode == 2) {
+            //playerLateStart = players[2];
+            //players[2].readTree();
             Dealer dealer = new Dealer(players.length);
             GameManager g = new GameManager(players, dealer, true);
             double startTime = System.currentTimeMillis();
@@ -107,8 +109,9 @@ public class ESTHER {
         }
 
         if (mode == 4) {
+            TrainingFunction trainer = new TrainingFunction();
             try {
-                TrainingFunction.generateData("testData");
+                trainer.generateData("new250LimitResultsWithVarRound.arff");
             }
             catch (IOException e){
                 throw e;
