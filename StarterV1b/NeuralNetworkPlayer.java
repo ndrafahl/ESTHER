@@ -36,10 +36,12 @@ public class NeuralNetworkPlayer extends Player {
      * our training function. The rest of the generations will use other constructors.
      ***********************************************************************/
 
+
     public NeuralNetworkPlayer(String name) throws IOException{
         bluePrint = new NeuralNetworkBluePrint(25, 3);
         neuralNetwork = new NeuralNetwork(bluePrint);
         winRateArray = createWinRateArray();
+
         this.name = name;
 
     }
@@ -64,6 +66,7 @@ public class NeuralNetworkPlayer extends Player {
         }
         neuralNetwork = new NeuralNetwork(bluePrint);
         winRateArray = createWinRateArray();
+
     }
 
     /*******************************************************************************
@@ -105,6 +108,7 @@ public class NeuralNetworkPlayer extends Player {
             winRateArray[i] = winRate;
         }
         return winRateArray;
+
     }
 
     @Override
@@ -115,6 +119,7 @@ public class NeuralNetworkPlayer extends Player {
     @Override
     public String getAction(TableData data){              //STILL UNDER CONSTRUCTION!!! THE InputData CLASS STILL NEEDS TO BE IMPLEMENTED.
         String pull = data.getValidActions();
+
         if(data.getBettingRound() == 1){
             int[] pocketCards = data.getPocket();
             int pocket1Rank = pocketCards[0] % 13;
@@ -169,6 +174,7 @@ public class NeuralNetworkPlayer extends Player {
             else {
                 return decision;
             }
+
         }
 
         else {

@@ -70,6 +70,9 @@ public class NeuralNetworkBluePrint implements Cloneable {
         numOfOutputs = aNumOfOutputs;
         outputWeights = aOutputWeights;
         outputBias = aOutputBias;
+
+        maxBias = 5;
+        maxWeight = 1;
     }
 
 
@@ -120,6 +123,88 @@ public class NeuralNetworkBluePrint implements Cloneable {
     @Override
     public NeuralNetworkBluePrint clone(){
         return this;
+
+    }
+
+    public void mutateInputBias(int inputNeuron){
+        inputBias[inputNeuron] = Math.random() * (maxBias * 2) - maxBias;
+    }
+
+    public void mutateAInputNeuronWeight(int inputNeuron, int weightNum){
+        inputWeights[inputNeuron][weightNum] = Math.random() * (maxWeight * 2) - maxWeight;
+    }
+
+    public void mutateAllInputNeuronWeights(int inputNeuron){
+        for(int i = 0; i < inputWeights[inputNeuron].length; i++){
+            inputWeights[inputNeuron][i] =  Math.random() * (maxWeight * 2) - maxWeight;
+        }
+
+    }
+
+    public void mutateInputBiasLayer(){
+        for(int i = 0; i < numOfInputs; i++){
+            mutateInputBias(i);
+        }
+    }
+
+    public void mutateInputWeightLayer(){
+        for(int i = 0; i < numOfInputs; i++){
+            mutateAllInputNeuronWeights(i);
+        }
+    }
+
+    public void mutateAHiddenLayerWeight(int layerNum, int neuronNum, int weightNum){
+        hiddenLayerWeights[layerNum][neuronNum][weightNum] =  Math.random() * (maxWeight * 2) - maxWeight;
+    }
+
+    public void mutateAllHiddenLayerNeuronWeights(int layerNum, int neuronNum){
+        for(int i = 0; i < hiddenLayerWeights[layerNum][neuronNum].length; i++){
+            hiddenLayerWeights[layerNum][neuronNum][i] =  Math.random() * (maxWeight * 2) - maxWeight;
+        }
+    }
+
+    public void mutateHiddenLayerBias(int layerNum, int neuronNum){
+        hiddenLayerBias[layerNum][neuronNum] = Math.random() * (maxBias * 2) - maxBias;
+    }
+
+    public void mutateHiddenLayerWeightLayer(int layerNum){
+        for(int i = 0; i < numOfNeuronsPerLayer[layerNum]; i++){
+            mutateAllHiddenLayerNeuronWeights(layerNum, i);
+        }
+    }
+
+    public void mutateHiddenLayerBiasLayer(int layerNum){
+        for(int i = 0; i < numOfNeuronsPerLayer[layerNum]; i++){
+            mutateHiddenLayerBias(layerNum, i);
+        }
+    }
+
+
+    public void mutateAOutputNeuronWeight(int outputNeuron, int weightNum){
+        outputWeights[outputNeuron][weightNum] = Math.random() * (maxWeight * 2) - maxWeight;
+    }
+
+    public void mutateOutputBias(int outputNeuron){
+        outputBias[outputNeuron] = Math.random() * (maxBias * 2) - maxBias;
+    }
+
+    public void mutateAllOutputNeuronWeights(int outputNeuron){
+        for(int i = 0; i < outputWeights[outputNeuron].length; i++){
+            outputWeights[outputNeuron][i] =  Math.random() * (maxWeight * 2) - maxWeight;
+        }
+    }
+
+    public void mutateOutputWeightLayer(){
+        for(int i = 0; i < numOfOutputs; i++){
+            mutateAllOutputNeuronWeights(i);
+        }
+    }
+
+    public void mutateOutputBiasLayer(){
+        for(int i = 0; i < numOfOutputs; i++){
+            mutateOutputBias(i);
+        }
+
     }
 
     public void copyArray(){
@@ -171,9 +256,4 @@ public class NeuralNetworkBluePrint implements Cloneable {
         return hiddenLayerWeights;
     }
 
-    // We still need to create the methods for mutating this Neural Network
-
-    public void modifyInputWeight(int neuronIndex, double newWeight){
-        inputWeights[neuronIndex][0] = newWeight;
-    }
 }
