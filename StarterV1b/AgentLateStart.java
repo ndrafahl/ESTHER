@@ -189,7 +189,11 @@ public class AgentLateStart extends Player {
         }
     }
 
+    // W = num of wins after move
+    // N = num of simulations after move
+    // C = exploration paramter. sqrt(2) is good first guess. Adjust it to fit
+    // T = total num of simulations. N of parent node
     private double mctsAlg(int w, int n, int c, int t){
-        return (w/n) + (sqrt(2) * (sqrt(log(t) / n)));
+        return (w/n) + c * (sqrt(log(t) / n));
     }
 }
