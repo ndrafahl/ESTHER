@@ -117,13 +117,13 @@ public class ESTHER {
 
         }
 
-        if (mode == 5)
+        if (mode == 5) {
             try {
                 PreFlopDecision.buildPocketArray(5);
-            }
-            catch (IOException e){
+            } catch (IOException e) {
                 throw e;
             }
+        }
 
     }
 

@@ -1,9 +1,13 @@
 import DAOFiles.NeuralNetworkDAO;
 import NeuralNetwork.NeuralNetwork;
 import NeuralNetwork.NeuralNetworkBluePrint;
+import com.sun.xml.internal.ws.policy.privateutil.PolicyUtils;
 
+import java.io.FileInputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Scanner;
 
 /**
  * Created by Russell on 2/14/2017.
@@ -20,6 +24,7 @@ public class NeuralNetworkPlayer extends Player {
     int card1Rank, card2Rank, card1Suit, card2Suit;
     String name;
     int handNumber;
+    double[] winRateArray = new double[169];
 
     /**********************************************************************
      * Constructors
@@ -31,9 +36,11 @@ public class NeuralNetworkPlayer extends Player {
      * our training function. The rest of the generations will use other constructors.
      ***********************************************************************/
 
-    public NeuralNetworkPlayer(String name){
+
+    public NeuralNetworkPlayer(String name) throws IOException{
         bluePrint = new NeuralNetworkBluePrint(25, 3);
         neuralNetwork = new NeuralNetwork(bluePrint);
+        winRateArray = createWinRateArray();
 
         this.name = name;
 
@@ -58,6 +65,8 @@ public class NeuralNetworkPlayer extends Player {
             throw e;
         }
         neuralNetwork = new NeuralNetwork(bluePrint);
+        winRateArray = createWinRateArray();
+
     }
 
     /*******************************************************************************
@@ -68,16 +77,38 @@ public class NeuralNetworkPlayer extends Player {
      * @param bluePrint
      ******************************************************************************/
 
-    public NeuralNetworkPlayer(String name, NeuralNetworkBluePrint bluePrint){
+    public NeuralNetworkPlayer(String name, NeuralNetworkBluePrint bluePrint)throws IOException{
         this.name = name;
         neuralNetwork = new NeuralNetwork(bluePrint);
         this.bluePrint = bluePrint;
+        winRateArray = createWinRateArray();
     }
 
-    public NeuralNetworkPlayer(NeuralNetworkBluePrint bluePrint){
+    public NeuralNetworkPlayer(NeuralNetworkBluePrint bluePrint) throws IOException{
         name = "Samuel";
         neuralNetwork = new NeuralNetwork(bluePrint);
         this.bluePrint = bluePrint;
+        winRateArray = createWinRateArray();
+
+    }
+
+    private double[] createWinRateArray() throws IOException {
+        Scanner fileIn;
+        String winRatesString;
+        double winRate;
+
+        try {
+            fileIn = new Scanner(new FileInputStream("winRates"));
+        } catch (IOException e) {
+            throw e;
+        }
+        for (int i = 0; i < 169; i++){
+            winRatesString = fileIn.nextLine();
+            winRate = Double.valueOf(winRatesString);
+            winRateArray[i] = winRate;
+        }
+        return winRateArray;
+
     }
 
     @Override
@@ -98,64 +129,59 @@ public class NeuralNetworkPlayer extends Player {
             int arrayIndex;
             double winRate;
 
+
             if (pocket1Suit == pocket2Suit) {
                 if (pocket1Rank < pocket2Rank) {
                     arrayIndex = (pocket1Rank * 13) + pocket2Rank;
-                } else {
+                }
+                else {
                     arrayIndex = (pocket2Rank * 13) + pocket1Rank;
                 }
-            } else {
+            }
+
+            else {
                 if (pocket1Rank < pocket2Rank) {
                     arrayIndex = (pocket2Rank * 13) + pocket1Rank;
-                } else {
+                }
+                else {
                     arrayIndex = (pocket1Rank * 13) + pocket2Rank;
                 }
             }
 
             winRate = winRateArray[arrayIndex];
-            String decision = "fold"
-            if (winRate <.4){
-                decision = "fold"
+            String decision = "fold";
+            if (winRate > .7){
+                decision = "bet";
             }
-            else if (winRate > .4){
-                decision = "call"
-            }
-            else if (winRate > .7){
-                decision = "bet"
+            else if (winRate >= .4){
+                decision = "call";
             }
             if (decision == "fold" && pull.contains("check")) {
                 return "check";
-            } else if (pull.contains(decision)) {
-                return decision;
-            } else if (decision == "bet" && pull.contains("raise")) {
-                return "raise";
-            } else if (decision == "bet" && !pull.contains("raise")) {
-                return "call";
-            } else if (decision == "call" && pull.contains("check")) {
-                return "check";
-            } else {
+            }
+            else if (pull.contains(decision)) {
                 return decision;
             }
-        }
-=======
-        int neuronIndex = 0;
-
-        InputData inputData = new InputData(data);
-
-        String decision = neuralNetwork.makeDecision(inputData.getInputList());
-
+            else if (decision == "bet" && pull.contains("raise")) {
+                return "raise";
+            }
+            else if (decision == "bet" && !pull.contains("raise")) {
+                return "call";
+            }
+            else if (decision == "call" && pull.contains("check")) {
+                return "check";
+            }
+            else {
+                return decision;
+            }
 
         }
 
         else {
-            int neuronIndex = 0;
-            if (neuralList.size() > 1) {
-                neuronIndex = findNeuron(data.getPocket());
-            }
 
             InputData inputData = new InputData(data);
 
-            String decision = neuralList.get(neuronIndex).makeDecision(inputData.getInputList());
+            String decision = neuralNetwork.makeDecision(inputData.getInputList());
 
             if (decision == "fold" && pull.contains("check")) {
                 return "check";
