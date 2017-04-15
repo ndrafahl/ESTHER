@@ -93,6 +93,7 @@ public class GATrainingFunc {
         int first;
         int second;
         NeuralNetworkBluePrint[] tempBlueprintList = new NeuralNetworkBluePrint[populationSize];
+
         NeuralNetworkBluePrint tempBluePrint, previousBlueprint;
 
         for(int i = 0; i < mutationCount; i++){
@@ -104,14 +105,15 @@ public class GATrainingFunc {
             previousBlueprint = networkArray[first];
             tempBluePrint = copyBlueprint(previousBlueprint);
 
-
         }
         for(int i = 0; i < selectionCount; i++){
             first = rand.nextInt();
             second = rand.nextInt();
+
             if(first > second){
                 first = second;
             }
+
             tempBlueprintList[mutationCount + i] = networkArray[first];
         }
         for(int i = 0; i < newBloodCount; i++){
@@ -119,6 +121,7 @@ public class GATrainingFunc {
         }
 
     }
+
 
     public NeuralNetworkBluePrint copyBlueprint(NeuralNetworkBluePrint previousBlueprint){
         NeuralNetworkBluePrint tempBluePrint;
@@ -170,4 +173,5 @@ public class GATrainingFunc {
                 hiddenLayerWeights, hiddenLayerBias, numOfOutputs, outputWeights, outputBias);
         return tempBluePrint;
     }
+
 }

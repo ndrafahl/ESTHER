@@ -70,6 +70,7 @@ public class NeuralNetworkBluePrint implements Cloneable {
         numOfOutputs = aNumOfOutputs;
         outputWeights = aOutputWeights;
         outputBias = aOutputBias;
+
         maxBias = 5;
         maxWeight = 1;
     }
@@ -122,6 +123,7 @@ public class NeuralNetworkBluePrint implements Cloneable {
     @Override
     public NeuralNetworkBluePrint clone(){
         return this;
+
     }
 
     public void mutateInputBias(int inputNeuron){
@@ -202,7 +204,17 @@ public class NeuralNetworkBluePrint implements Cloneable {
         for(int i = 0; i < numOfOutputs; i++){
             mutateOutputBias(i);
         }
+
     }
+
+    public void copyArray(){
+        double[][] newInputWeights = new double[inputWeights.length][];
+        for(int i = 0; i < inputWeights.length; i++){
+            newInputWeights[i] = Arrays.copyOf(inputWeights[i], inputWeights[i].length);
+        }
+        inputWeights = newInputWeights;
+    }
+
 
     public double[] getInputBias() {
         return inputBias;
