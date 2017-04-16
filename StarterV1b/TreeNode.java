@@ -86,6 +86,23 @@ public class TreeNode<T> implements java.io.Serializable {
         return this.name;
     }
 
+    public int getVisited() {
+        return this.visits;
+    }
+
+    public int getBetWins() {
+        return this.betWins;
+    }
+
+    public int getFoldWins() {
+        return this.foldWins;
+    }
+
+    public int getCallWins() {
+        return this.callWins;
+    }
+
+
     public int[] getBoard() {
         return this.board;
     }

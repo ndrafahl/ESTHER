@@ -3,6 +3,7 @@ import java.util.Random;
 import java.util.List;
 import java.util.LinkedList;
 import java.io.*;
+import static java.lang.Math.*;
 
 /**
  * Created by Nick Drafahl on 2/13/2017.
@@ -203,5 +204,13 @@ public class AgentLateStart extends Player {
         }finally {
             return;
         }
+    }
+
+    // W = num of wins after move
+    // N = num of simulations after move
+    // C = exploration paramter. sqrt(2) is good first guess. Adjust it to fit
+    // T = total num of simulations. N of parent node
+    private double mctsAlg(int w, int n, int c, int t){
+        return (w/n) + c * (sqrt(log(t) / n));
     }
 }
