@@ -2,6 +2,7 @@ import java.util.Arrays;
 import java.util.Random;
 import java.util.List;
 import java.util.LinkedList;
+import java.util.ArrayList;
 import java.io.*;
 import static java.lang.Math.*;
 
@@ -11,10 +12,11 @@ import static java.lang.Math.*;
 public class AgentLateStart extends Player {
     private final int num;
     private final int[] limits = {1, 1, 1, 2, 2};
+
+    // Local TreeNodes
+    private LinkedList<TreeNode> queue;
     private TreeNode root;
     private TreeNode currentNode;
-    private boolean simulate;
-    private LinkedList<TreeNode> queue;
 
     // Local Variables Created from TableData
     private int[] tempBoard;
@@ -25,7 +27,11 @@ public class AgentLateStart extends Player {
     private int[] simPlayerStakes;
     private int[] simBank;
 
+    private boolean simulate;
     private int lastBoardSize;
+
+    private LinkedList<String> actionQueue;
+
 
     public AgentLateStart (int num) {
         this.num = num;
@@ -33,7 +39,8 @@ public class AgentLateStart extends Player {
         currentNode = root;
         simulate = true;
         this.queue = new LinkedList<TreeNode>();
-        this.readTree();
+        this.actionQueue = new LinkedList<String>();
+        //this.readTree();
     }
 
     @Override
@@ -47,36 +54,7 @@ public class AgentLateStart extends Player {
         System.out.println("Entering getAction for AgentLateStart");
         generateLocalData(data);
 
-        // simulate should only be true if GameManager is calling getAction(), otherwise GameManagerSim is calling this.
-        if(simulate) {
-            if(tempBoard.length == 0) {
-                currentNode = root;
-                queue.add(currentNode);
-            } else {
-                queue.add(currentNode);
-            }
-            System.out.println("Emplacing into queue with depth of: " + currentNode.getDepth());
-            //queue.add(currentNode);
-            lastBoardSize = data.getBoard().length;
-        }
-
-        // Display what this agent's current hand is to console for testing.
-        System.out.println("LateStart's pocket is :");
-        System.out.print(EstherTools.intCardToStringCard(data.getPocket()[0]) + " ");
-        System.out.println(EstherTools.intCardToStringCard(data.getPocket()[1]));
-
-        System.out.print("LateStart's pocket in Int is: ");
-        System.out.println(data.getPocket()[0] + " " + data.getPocket()[1]);
-
-        System.out.print("LateStart's sorted pocket in Int is: ");
-        System.out.println(tempPocket[0] + " " + tempPocket[1]);
-
-        System.out.println("Board size is currently: " + data.getBoard().length);
-
-        // Print to console to verify that we're starting a "new" game.
-        //System.out.println("Starting a new game from round " + data.getBettingRound());
-
-        TreeNode tempNode = currentNode.findChild(tempPocket, tempBoard, currentNode.isRoot());
+        TreeNode tempNode = currentNode.findChild(tempPocket, tempBoard, currentNode.isRoot()); 
 
         if(tempNode == null) {
             System.out.println("No node found from node at depth " + currentNode.getDepth() + ", creating new node.");
@@ -87,10 +65,26 @@ public class AgentLateStart extends Player {
         } else {
             System.out.println("Node found under root!");
             System.out.println("currentNodes depth is: " + currentNode.getDepth() + " | tempNodes depth is: " + tempNode.getDepth());
-
         }
-    	//root.addChild(tempNode);
-        //System.out.println("roots children count: " + root.getNumOfChildren());
+
+        // simulate should only be true if GameManager is calling getAction(), otherwise GameManagerSim is calling this.
+        if(simulate) {
+            System.out.println("if(simulate) putting in currentNode");
+            queue.add(currentNode);
+            System.out.println("if(simulate) putting in null action");
+            actionQueue.add("null");
+            System.out.println("Successfully emplaced null action");      
+            System.out.println("Emplacing into queue with depth of: " + currentNode.getDepth());
+            //queue.add(currentNode);
+            lastBoardSize = data.getBoard().length;
+        }
+
+        //printHand(data);
+
+        //System.out.println("Board size is currently: " + data.getBoard().length);
+
+        // Print to console to verify that we're starting a "new" game.
+        //System.out.println("Starting a new game from round " + data.getBettingRound());
 
         currentNode = tempNode;
 
@@ -120,7 +114,7 @@ public class AgentLateStart extends Player {
 
             // Confirmation the game ended.
             System.out.println("Finished \"new game\" where beginning simulation had a board size of: " + lastBoardSize);
-            writeTree();
+            //writeTree();
         } else {
             // Code pulled from AgentRandomPlayer.  Return a random action so we can get on to the next round.  This will be updated to be based on whatever the
             // MCTS Agent decides to return based on the Algorithm.
@@ -130,6 +124,7 @@ public class AgentLateStart extends Player {
             String[] choices = pull.split(",");
             Random randomGenerator = new Random();
             int index = randomGenerator.nextInt(choices.length);
+            actionQueue.add(choices[index]);
             return choices[index];
         }
 
@@ -158,19 +153,40 @@ public class AgentLateStart extends Player {
         simBank = Arrays.copyOf(data.getCashBalances(), data.getCashBalances().length);
     }
 
+    private void printHand(TableData data) {
+        // Display what this agent's current hand is to console for testing.
+        System.out.println("LateStart's pocket is :");
+        System.out.print(EstherTools.intCardToStringCard(data.getPocket()[0]) + " ");
+        System.out.println(EstherTools.intCardToStringCard(data.getPocket()[1]));
+
+        System.out.print("LateStart's pocket in Int is: ");
+        System.out.println(data.getPocket()[0] + " " + data.getPocket()[1]);
+
+        System.out.print("LateStart's sorted pocket in Int is: ");
+        System.out.println(tempPocket[0] + " " + tempPocket[1]);
+    }
+
     private void backPropagate() {
         TreeNode backNode;
+        String backAction;
 
         currentNode = queue.getFirst();
+
+        System.out.println("queue's size is: " + queue.size());
+        //System.out.println("actionQueue's size is: " + actionQueue.size());
 
         System.out.println("\nPrinting nodes visited:");
         while(!queue.isEmpty()) {
             backNode = queue.getLast();
-            System.out.println(backNode.getDepth());
+            //backAction = actionQueue.getLast();
+            System.out.println("Depth : " + backNode.getDepth());
+            //System.out.println("Depth : " + backNode.getDepth() + " Action to get here: " + backAction);
+            //actionQueue.removeLast();
             queue.removeLast();
         }
 
         queue.clear();
+        actionQueue.clear();
     }
 
     public void writeTree(){
