@@ -32,6 +32,7 @@ public class AgentLateStart extends Player {
         currentNode = root;
         simulate = true;
         this.queue = new LinkedList<TreeNode>();
+        this.readTree();
     }
 
     @Override
@@ -47,8 +48,14 @@ public class AgentLateStart extends Player {
 
         // simulate should only be true if GameManager is calling getAction(), otherwise GameManagerSim is calling this.
         if(simulate) {
+            if(tempBoard.length == 0) {
+                currentNode = root;
+                queue.add(currentNode);
+            } else {
+                queue.add(currentNode);
+            }
             System.out.println("Emplacing into queue with depth of: " + currentNode.getDepth());
-            queue.add(currentNode);
+            //queue.add(currentNode);
             lastBoardSize = data.getBoard().length;
         }
 
@@ -112,6 +119,7 @@ public class AgentLateStart extends Player {
 
             // Confirmation the game ended.
             System.out.println("Finished \"new game\" where beginning simulation had a board size of: " + lastBoardSize);
+            writeTree();
         } else {
             // Code pulled from AgentRandomPlayer.  Return a random action so we can get on to the next round.  This will be updated to be based on whatever the
             // MCTS Agent decides to return based on the Algorithm.
@@ -191,6 +199,8 @@ public class AgentLateStart extends Player {
         }catch(ClassNotFoundException e) {
             System.out.println("TreeNode class not found");
             e.printStackTrace();
+            return;
+        }finally {
             return;
         }
     }
