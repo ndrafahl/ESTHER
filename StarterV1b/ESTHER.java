@@ -55,7 +55,7 @@ public class ESTHER {
         }
         if (mode == 2) {
             Dealer dealer = new Dealer(players.length);
-            GameManager g = new GameManager(players, dealer, true);
+            GameManager g = new GameManager(players, dealer, false);
             double startTime = System.currentTimeMillis();
 
             int[] end = g.playGame();

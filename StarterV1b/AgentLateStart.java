@@ -17,6 +17,8 @@ public class AgentLateStart extends Player {
     private LinkedList<TreeNode> queue;
     private TreeNode root;
     private TreeNode currentNode;
+    private TreeNode simNode;
+    private TreeNode lastSimNode;
 
     // Local Variables Created from TableData
     private int[] tempBoard;
@@ -54,6 +56,21 @@ public class AgentLateStart extends Player {
         System.out.println("Entering getAction for AgentLateStart");
         generateLocalData(data);
 
+        if(data.getBoard().length == 0) {
+            System.out.println("Searching root");
+            currentNode = root;
+            //TreeNode tempNode = currentNode.findChild(tempPocket, tempBoard, currentNode.isRoot());
+        } else {
+            System.out.println("Searching not root");
+            if(queue.size() == 0) {
+                currentNode = lastSimNode;
+            } else {
+                currentNode = queue.getLast();
+            }
+            //currentNode = queue.getLast();
+            //TreeNode tempNode = currentNode.findChild(tempPocket, tempBoard, currentNode.isRoot());
+        }
+
         TreeNode tempNode = currentNode.findChild(tempPocket, tempBoard, currentNode.isRoot()); 
 
         if(tempNode == null) {
@@ -67,17 +84,16 @@ public class AgentLateStart extends Player {
             System.out.println("currentNodes depth is: " + currentNode.getDepth() + " | tempNodes depth is: " + tempNode.getDepth());
         }
 
-        // simulate should only be true if GameManager is calling getAction(), otherwise GameManagerSim is calling this.
-        if(simulate) {
+        // simulate should only be true if GameManager is calling getAction(), otherwise GameManagerSim is calling getAction()
+        /*if(simulate) {
             System.out.println("if(simulate) putting in currentNode");
             queue.add(currentNode);
             System.out.println("if(simulate) putting in null action");
             actionQueue.add("null");
             System.out.println("Successfully emplaced null action");      
             System.out.println("Emplacing into queue with depth of: " + currentNode.getDepth());
-            //queue.add(currentNode);
             lastBoardSize = data.getBoard().length;
-        }
+        }*/
 
         //printHand(data);
 
@@ -95,8 +111,9 @@ public class AgentLateStart extends Player {
         if(simulate) {
             simulate = false;
             // Play the Simulation of the game.
-            queue.add(currentNode);
-            GameManagerSim g = new GameManagerSim(simPlayers, dealer, true, limits, 3, 1,
+            queue.add(currentNode);        
+
+            GameManagerSim g = new GameManagerSim(simPlayers, dealer, false, limits, 3, 1,
                     simWhosIn, simPlayerStakes, simBank, data);
 
             // Play the simulated game, only one "hand"
@@ -113,7 +130,7 @@ public class AgentLateStart extends Player {
             }
 
             // Confirmation the game ended.
-            System.out.println("Finished \"new game\" where beginning simulation had a board size of: " + lastBoardSize);
+            System.out.println("Finished \"new game\" where beginning simulation had an initial board size of: " + lastBoardSize);
             //writeTree();
         } else {
             // Code pulled from AgentRandomPlayer.  Return a random action so we can get on to the next round.  This will be updated to be based on whatever the
@@ -124,6 +141,12 @@ public class AgentLateStart extends Player {
             String[] choices = pull.split(",");
             Random randomGenerator = new Random();
             int index = randomGenerator.nextInt(choices.length);
+
+            while(choices[index].equals("fold")) {
+                System.out.println("Was going to return fold, picking new index.");
+                index = randomGenerator.nextInt(choices.length);
+            }
+
             actionQueue.add(choices[index]);
             return choices[index];
         }
@@ -133,6 +156,7 @@ public class AgentLateStart extends Player {
         String [] choices = pull.split(",");
         Random randomGenerator = new Random();
         int index = randomGenerator.nextInt(choices.length);
+
         return choices[index];
     }
 
@@ -170,7 +194,9 @@ public class AgentLateStart extends Player {
         TreeNode backNode;
         String backAction;
 
-        currentNode = queue.getFirst();
+        //currentNode = queue.getFirst();    
+
+        lastSimNode = queue.getFirst();
 
         System.out.println("queue's size is: " + queue.size());
         //System.out.println("actionQueue's size is: " + actionQueue.size());
