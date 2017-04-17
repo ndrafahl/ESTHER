@@ -34,14 +34,14 @@ public class NeuralNetworkBluePrint implements Cloneable {
         maxNumOfNeurons = 15;          //Same as above for this line.
         maxBias = 5;                   //This is the maximum random bias value for a neuron.
         maxWeight = 1;                 //This is the maximum random weight value for a neuron.
-        Random randLayers = new Random(maxNumOfLayers);
-        Random randNeurons = new Random(maxNumOfNeurons);
+        Random randLayers = new Random();
+        Random randNeurons = new Random();
         numOfInputs = inputSize;
         numOfOutputs = outputSize;
-        numOfHiddenLayers = randLayers.nextInt();
+        numOfHiddenLayers = randLayers.nextInt(maxNumOfLayers) + 1;
         numOfNeuronsPerLayer = new int[numOfHiddenLayers];
         for(int x = 0; x < numOfHiddenLayers; x++) {                    //This for-loop is creating random bias and weights for each of the hidden layer neurons.
-            numOfNeuronsPerLayer[x] = randNeurons.nextInt();
+            numOfNeuronsPerLayer[x] = randNeurons.nextInt(maxNumOfLayers) + 1;
         }
         generateNeuralNetwork();
     }

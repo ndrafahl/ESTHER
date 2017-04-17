@@ -159,4 +159,24 @@ public class NeuralNetworkDAO  {
             throw e;
         }
     }
+
+    public double[] loadWinRateArray() throws IOException{
+        Scanner fileIn;
+        String winRatesString;
+        double winRate;
+        double[] winRateArray = new double[169];
+
+
+        try {
+            fileIn = new Scanner(new FileInputStream("winRates"));
+        } catch (IOException e) {
+            throw e;
+        }
+        for (int i = 0; i < 169; i++){
+            winRatesString = fileIn.nextLine();
+            winRate = Double.valueOf(winRatesString);
+            winRateArray[i] = winRate;
+        }
+        return winRateArray;
+    }
 }
