@@ -56,7 +56,7 @@ public class AgentLateStart extends Player {
         System.out.println("Entering getAction for AgentLateStart");
         generateLocalData(data);
 
-        if(data.getBoard().length == 0) {
+        /*if(data.getBoard().length == 0) {
             System.out.println("Searching root");
             currentNode = root;
             //TreeNode tempNode = currentNode.findChild(tempPocket, tempBoard, currentNode.isRoot());
@@ -82,7 +82,7 @@ public class AgentLateStart extends Player {
         } else {
             System.out.println("Node found under root!");
             System.out.println("currentNodes depth is: " + currentNode.getDepth() + " | tempNodes depth is: " + tempNode.getDepth());
-        }
+        } */
 
         // simulate should only be true if GameManager is calling getAction(), otherwise GameManagerSim is calling getAction()
         /*if(simulate) {
@@ -102,7 +102,7 @@ public class AgentLateStart extends Player {
         // Print to console to verify that we're starting a "new" game.
         //System.out.println("Starting a new game from round " + data.getBettingRound());
 
-        currentNode = tempNode;
+        //currentNode = tempNode;
 
         // Overwrite the "AgentLateStart" agent with a random player agent.  Later we need to change this to be the MCTS agent.
         // If we don't do this, we'll just recursively recreate a game each time til we run out of memory.
@@ -111,7 +111,9 @@ public class AgentLateStart extends Player {
         if(simulate) {
             simulate = false;
             // Play the Simulation of the game.
-            queue.add(currentNode);        
+            //queue.add(currentNode); 
+   
+            System.out.println("Calling GameManagerSim with a boardsize of: " + data.getBoard().length);
 
             GameManagerSim g = new GameManagerSim(simPlayers, dealer, false, limits, 3, 1,
                     simWhosIn, simPlayerStakes, simBank, data);
@@ -135,6 +137,40 @@ public class AgentLateStart extends Player {
         } else {
             // Code pulled from AgentRandomPlayer.  Return a random action so we can get on to the next round.  This will be updated to be based on whatever the
             // MCTS Agent decides to return based on the Algorithm.
+            
+            System.out.println("Entering else statement with a boardsize of: " + data.getBoard().length);
+
+            if(data.getBoard().length == 0) {
+                System.out.println("Searching root");
+                currentNode = root;
+                //TreeNode tempNode = currentNode.findChild(tempPocket, tempBoard, currentNode.isRoot());
+            } else {
+                System.out.println("Searching not root");
+                if(queue.size() == 0) {
+                    currentNode = lastSimNode;
+                } else {
+                    currentNode = queue.getLast();
+                }
+                //currentNode = queue.getLast();
+                //TreeNode tempNode = currentNode.findChild(tempPocket, tempBoard, currentNode.isRoot());
+            }
+
+            TreeNode tempNode = currentNode.findChild(tempPocket, tempBoard, currentNode.isRoot()); 
+
+            if(tempNode == null) {
+                System.out.println("No node found from node at depth " + currentNode.getDepth() + ", creating new node.");
+                tempNode = new TreeNode(tempPocket, tempBoard);
+                //root.addChild(tempNode);
+                currentNode.addChild(tempNode);
+                System.out.println("currentNodes depth is: " + currentNode.getDepth() + " | tempNodes depth is: " + tempNode.getDepth());
+            } else {
+                System.out.println("Node found under root!");
+                System.out.println("currentNodes depth is: " + currentNode.getDepth() + " | tempNodes depth is: " + tempNode.getDepth());
+            }
+
+            currentNode = tempNode;
+
+
             System.out.println("Emplacing into queue (else) with depth of: " + currentNode.getDepth());
             queue.add(currentNode);
             String pull = data.getValidActions();
