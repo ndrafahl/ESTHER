@@ -25,6 +25,7 @@ public class NeuralNetworkPlayer extends Player {
     String name;
     int handNumber;
     double[] winRateArray = new double[169];
+    double callThreshold, raiseThreshold;
 
     /**********************************************************************
      * Constructors
@@ -43,6 +44,7 @@ public class NeuralNetworkPlayer extends Player {
         winRateArray = createWinRateArray();
 
         this.name = name;
+        initThresholds();
 
     }
 
@@ -66,6 +68,7 @@ public class NeuralNetworkPlayer extends Player {
         }
         neuralNetwork = new NeuralNetwork(bluePrint);
         winRateArray = createWinRateArray();
+        initThresholds();
 
     }
 
@@ -82,6 +85,7 @@ public class NeuralNetworkPlayer extends Player {
         neuralNetwork = new NeuralNetwork(bluePrint);
         this.bluePrint = bluePrint;
         winRateArray = createWinRateArray();
+        initThresholds();
     }
 
     public NeuralNetworkPlayer(NeuralNetworkBluePrint bluePrint) throws IOException{
@@ -89,7 +93,7 @@ public class NeuralNetworkPlayer extends Player {
         neuralNetwork = new NeuralNetwork(bluePrint);
         this.bluePrint = bluePrint;
         winRateArray = createWinRateArray();
-
+        initThresholds();
     }
 
     private double[] createWinRateArray() throws IOException {
@@ -111,13 +115,26 @@ public class NeuralNetworkPlayer extends Player {
 
     }
 
+    private void initThresholds(){
+        callThreshold = .16;
+        raiseThreshold = .22;
+    }
+
+    public void setRaiseThreshold(double threshold){raiseThreshold = threshold;}
+
+    public void setCallThreshold(double threshold){callThreshold = threshold;}
+
+    public double getCallThreshold(){return callThreshold;}
+
+    public double getRaiseThreshold(){return raiseThreshold;}
+
     @Override
     public String getScreenName() {
         return name;
     }
 
     @Override
-    public String getAction(TableData data){              //STILL UNDER CONSTRUCTION!!! THE InputData CLASS STILL NEEDS TO BE IMPLEMENTED.
+    public String getAction(TableData data){    //STILL UNDER CONSTRUCTION!!! THE InputData CLASS STILL NEEDS TO BE IMPLEMENTED.
         String pull = data.getValidActions();
 
         if(data.getBettingRound() == 1){
@@ -150,10 +167,10 @@ public class NeuralNetworkPlayer extends Player {
 
             winRate = winRateArray[arrayIndex];
             String decision = "fold";
-            if (winRate > .7){
+            if (winRate > raiseThreshold){
                 decision = "bet";
             }
-            else if (winRate >= .4){
+            else if (winRate >= callThreshold){
                 decision = "call";
             }
             if (decision == "fold" && pull.contains("check")) {
@@ -179,7 +196,7 @@ public class NeuralNetworkPlayer extends Player {
 
         else {
 
-            InputData inputData = new InputData(data);
+            /*InputData inputData = new InputData(data);
 
             String decision = neuralNetwork.makeDecision(inputData.getInputList());
 
@@ -195,6 +212,13 @@ public class NeuralNetworkPlayer extends Player {
                 return "check";
             } else {
                 return "fold";
+            }*/
+            String decision = "call";
+            if(pull.contains(decision)){
+                return decision;
+            }
+            else{
+                return "check";
             }
         }
     }

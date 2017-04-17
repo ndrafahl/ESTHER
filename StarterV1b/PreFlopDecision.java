@@ -136,8 +136,8 @@ public class PreFlopDecision {
             }
 
             for (int i = 0; i < 169; i++) {
-                int tempInt = (int) Math.round(gamesWon[i] * 1.0 / gamesPlayed[i] * 100);
-                winRateArray[i] = tempInt * 1.0 / 100;
+                int tempInt = (int) Math.round(gamesWon[i] * 1.0 / gamesPlayed[i] * 1000);
+                winRateArray[i] = tempInt * 1.0 / 1000;
             }
             String fileName = "winRates";
 

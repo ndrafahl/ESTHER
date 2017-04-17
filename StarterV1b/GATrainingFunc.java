@@ -10,7 +10,7 @@ import static java.lang.Integer.min;
  */
 public class GATrainingFunc {
 
-    private int generations, populationSize, mutationCount, selectionCount, newBloodCount, handsToPlay;
+    private int generations, populationSize, selectionCount, newBloodCount, handsToPlay;
     private String outputFile;
     private NeuralNetworkBluePrint[] networkArray;
     private NeuralNetworkBluePrint bestNeuralNetwork;
@@ -20,19 +20,29 @@ public class GATrainingFunc {
     private int[] playerResults;
     private int[] limits = {1,1,1,2,2};
     private Random rand;
+    private int inputWeightMutate, inputBiasMutate, outputWeightMutate, outputBiasMutate, hiddenWeightMutate;
+    private int hiddenBiasMutate, totalMutations;
 
 
 
-    public void GAtrainingFunc(int aGenerations, int aPopulationSize, int aMutationCount, int aSelectionCount,
+    public void GAtrainingFunc(int aGenerations, int aPopulationSize, int aInputWeightMutate, int aInputBiasMutate,
+                               int aOutputWeightMutate, int aOutputBiasMutate, int aHiddenWeightMutate,
+                               int aHiddenBiasMutate, int aSelectionCount,
                                int aNewBloodCount, int aHandsToPlay, String aOutputFile){
         generations = aGenerations;
         populationSize = aPopulationSize;
-        mutationCount = aMutationCount;
+        inputWeightMutate = aInputWeightMutate;
+        inputBiasMutate = aInputBiasMutate;
+        outputBiasMutate = aOutputBiasMutate;
+        outputWeightMutate = aOutputWeightMutate;
+        hiddenWeightMutate = aHiddenWeightMutate;
+        hiddenBiasMutate = aHiddenBiasMutate;
         selectionCount = aSelectionCount;
         newBloodCount = aNewBloodCount;
         handsToPlay = aHandsToPlay;
         outputFile = aOutputFile;
-        rand = new Random(populationSize);
+        totalMutations = inputBiasMutate + inputWeightMutate + outputWeightMutate + outputBiasMutate + hiddenBiasMutate + hiddenWeightMutate;
+        rand = new Random();
         networkArray = new NeuralNetworkBluePrint[populationSize];
         trainingPlayerList = new Player[6];
         trainingPlayerList[0] = new AgentAlwaysCall(0);
@@ -62,7 +72,12 @@ public class GATrainingFunc {
     private void createPopulation(){
         for(int i = 0; i < populationSize; i++){
             networkArray[i] = new NeuralNetworkBluePrint(40, 3);
-            playerArray[i] = new NeuralNetworkPlayer(networkArray[i]);
+            try {
+                playerArray[i] = new NeuralNetworkPlayer(networkArray[i]);
+            }
+            catch (IOException e){
+
+            }
         }
     }
 
@@ -70,9 +85,9 @@ public class GATrainingFunc {
         int tempInt;
         NeuralNetworkBluePrint tempBlueprint;
         boolean changeMade;
-        for(int i = 0; i < playerResults.length - 1; i++){
+        for(int i = 0; i < playerResults.length - 2; i++){
             changeMade = false;
-            for(int j = i; j < playerResults.length - i; j++){
+            for(int j = i; j < playerResults.length - 1; j++){
                 if(playerResults[j] < playerResults[j+1]){
                         tempInt = playerResults[j];
                         playerResults[j] = playerResults[j+1];
@@ -96,9 +111,9 @@ public class GATrainingFunc {
 
         NeuralNetworkBluePrint tempBluePrint, previousBlueprint;
 
-        for(int i = 0; i < mutationCount; i++){
-            first = rand.nextInt();
-            second = rand.nextInt();
+        for(int i = 0; i < inputWeightMutate; i++){
+            first = rand.nextInt(populationSize);
+            second = rand.nextInt(populationSize);
             if(first > second){
                 first = second;
             }
@@ -107,17 +122,17 @@ public class GATrainingFunc {
 
         }
         for(int i = 0; i < selectionCount; i++){
-            first = rand.nextInt();
-            second = rand.nextInt();
+            first = rand.nextInt(populationSize);
+            second = rand.nextInt(populationSize);
 
             if(first > second){
                 first = second;
             }
 
-            tempBlueprintList[mutationCount + i] = networkArray[first];
+            tempBlueprintList[totalMutations + i] = networkArray[first];
         }
         for(int i = 0; i < newBloodCount; i++){
-            tempBlueprintList[mutationCount+selectionCount+i] = new NeuralNetworkBluePrint(40, 3);
+            tempBlueprintList[totalMutations+selectionCount+i] = new NeuralNetworkBluePrint(40, 3);
         }
 
     }
