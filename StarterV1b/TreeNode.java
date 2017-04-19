@@ -15,6 +15,8 @@ public class TreeNode<T> implements java.io.Serializable {
     private TreeNode<T> parent;
     private List<TreeNode<T>> children;
 
+    private TreeNode<T> serialChild;
+
     private String name;
     private int depth;
 
@@ -25,6 +27,8 @@ public class TreeNode<T> implements java.io.Serializable {
 
     private int[] pocket;
     private int[] board;
+
+    private int totalNodeCount;
 
     public TreeNode(T data) {
         this.data = data;
@@ -182,19 +186,49 @@ public class TreeNode<T> implements java.io.Serializable {
         return null;
     }
 
+    public void recursionToRoot() {
+        if(this.name == "root" || this.parent == null) {
+            System.out.println("My name is root and my depth is: " + this.depth);
+            //System.out.println(this.depth);
+            //return;
+        } else {
+            System.out.println("My name is not root and my depth is: " + this.depth);
+            this.getParent().recursionToRoot();
+            //recursionToRoot(this.parent);
+        }
+
+        return;
+    }
+
     public void recursionToRoot(TreeNode t) { 
         //System.out.println(this.getDepth());
         
-        if(this.name == "root") {
-            System.out.println(this.getDepth());
-            return;
+        if(this.name == "root" || this.parent == null) {
+            System.out.println("My name is root and my depth is: " + this.depth);
+            //return;
         } else {
-            System.out.println(this.getDepth());
+            System.out.println("My name is not root and my depth is: " + this.depth);
             recursionToRoot(this.parent);
         }
+
+        return;
+    }
+
+    public void setSerialChild(TreeNode t) {
+        this.serialChild = t;
     }
        
+    public TreeNode<T> getSerialChild() {
+        return this.serialChild;
+    }
 
+    public void setTotalNodeCount(int nodeCount) {
+        this.totalNodeCount = nodeCount;
+    }
+
+    public int getTotalNodeCount() {
+        return this.totalNodeCount;
+    }
 
     public boolean hasChildren() { return !children.isEmpty();}
     // other features ...

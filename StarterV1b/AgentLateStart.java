@@ -10,6 +10,8 @@ import static java.lang.Math.*;
  * Created by Nick Drafahl on 2/13/2017.
  */
 public class AgentLateStart extends Player {
+    private final boolean SERIALIZE = true;
+
     private final int num;
     private final int[] limits = {1, 1, 1, 2, 2};
 
@@ -42,7 +44,7 @@ public class AgentLateStart extends Player {
 
     public AgentLateStart (int num) {
         this.num = num;
-	    root = new TreeNode("root");
+	    /*root = new TreeNode("root");
         currentNode = root;
         simulate = true;
         this.queue = new LinkedList<TreeNode>();
@@ -51,9 +53,31 @@ public class AgentLateStart extends Player {
         lastSimNode = root;
         lastNode = root;
 
-        nodeTotal = 1; // Includes root
+        nodeTotal = 1; // Includes root */
 
+        if (SERIALIZE) {
+            System.out.println("Serialize is True, reading in root");
+            this.readTree();
+            System.out.println("After reading in treenode.ser, nodeTotal is: " + nodeTotal);
+        } else {
+            root = new TreeNode("root");
+            nodeTotal = 1;
+        }
+
+        //curentNode = root;
+        simulate = true;
+        this.queue = new LinkedList<TreeNode>();
+        this.actionQueue = new LinkedList<String>();
         //this.readTree();
+
+        lastSimNode = root;
+        lastNode = root;
+        currentNode = root;
+
+        /*TreeNode randomNode = root.getSerialChild();
+
+        System.out.println("printing randomNode");
+        randomNode.recursionToRoot(); */
     }
 
     @Override
@@ -104,6 +128,7 @@ public class AgentLateStart extends Player {
 
             backPropagate();
             simulate = true;
+            writeTree();
         } else {
             // Code pulled from AgentRandomPlayer.  Return a random action so we can get on to the next round.  This will be updated to be based on whatever the
             // MCTS Agent decides to return based on the Algorithm.
@@ -146,6 +171,11 @@ public class AgentLateStart extends Player {
             currentNode = tempNode;
             lastNode = tempNode;
             lastBoardSize = data.getBoard().length;
+
+            // Add a "random" child to root, so we can test the import/export of the entire Tree structure
+            root.setSerialChild(currentNode);
+
+            currentNode.recursionToRoot();
 
 
             System.out.println("Emplacing into queue (else) with depth of: " + currentNode.getDepth());
@@ -267,7 +297,10 @@ public class AgentLateStart extends Player {
             root = (TreeNode) in.readObject(); //assigns root as previous root
             in.close();
             fileIn.close();
+            nodeTotal = root.getTotalNodeCount();
         }catch(IOException i) {
+            root = new TreeNode("root");
+            nodeTotal = 1;
             i.printStackTrace();
             return;
         }catch(ClassNotFoundException e) {
