@@ -59,6 +59,8 @@ public class AgentLateStart extends Player {
             System.out.println("Serialize is True, reading in root");
             this.readTree();
             System.out.println("After reading in treenode.ser, nodeTotal is: " + nodeTotal);
+            System.out.println("After reading in treenode.ser, root's name is: " + root.getName());
+            System.out.println("After reading in treenode.ser, root's number of children is: " + root.getNumOfChildren());
         } else {
             root = new TreeNode("root");
             nodeTotal = 1;
@@ -128,6 +130,8 @@ public class AgentLateStart extends Player {
 
             backPropagate();
             simulate = true;
+            System.out.println("Writing tree to .ser where nodeTotal is: " + nodeTotal);
+            root.setTotalNodeCount(nodeTotal);
             writeTree();
         } else {
             // Code pulled from AgentRandomPlayer.  Return a random action so we can get on to the next round.  This will be updated to be based on whatever the
