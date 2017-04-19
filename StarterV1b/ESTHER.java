@@ -66,8 +66,9 @@ public class ESTHER {
                         + players[x].getScreenName() + " had " + end[x]);
             }
 
-            //AgentLS = players.get(2);
-            //AgentLS.writeTree();
+            AgentLateStart test = (AgentLateStart) players[2];
+            System.out.println(test.getScreenName());
+            test.writeTree(); //writes the current tree to file: treenode.ser
 
             double endTime = System.currentTimeMillis();
             double runTime = (endTime - startTime) / 1000;
