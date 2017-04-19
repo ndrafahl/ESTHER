@@ -121,7 +121,7 @@ public class GameManagerSim {
     private void handLevelSetup(TableData data) {
         pot = data.getTotalPot();
         activePlayers = stillIn.length;
-        round = data.getBettingRound();
+        round = data.getBettingRound() - 1;
 
         for (int x = 0; x < 5; x++) {
             handActions[x] = new ArrayList<>();
@@ -132,7 +132,9 @@ public class GameManagerSim {
     private void manageBettingRound(TableData data) {
         if (debug) {
             System.out.println("Entering manageBettingRound for round " + data.getBettingRound() + "(GameManagerSim)");
+            //System.out.println("Changing round to: " + (round + 1));
         }
+
         String response;
         round++;
         //raisesLeft = raiseLimit + 1;
@@ -145,7 +147,7 @@ public class GameManagerSim {
         }
 
         while (activePlayers > 1 && actionsNeeded > 0) {
-            System.out.println("Action to "+currentBettor);
+            System.out.println("Action to "+ currentBettor + " (GameManagerSim)");
             if (stillIn[currentBettor]) {
                 String valid = "fold,";
                 if (raisesLeft > raiseLimit) {
@@ -235,6 +237,8 @@ public class GameManagerSim {
             currentBettor = (currentBettor + 1) % players.length;
 
         }
+
+        //round++;        
     }
 
     private void determinePotWinner() {

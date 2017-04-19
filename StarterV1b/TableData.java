@@ -10,7 +10,7 @@ import java.util.ArrayList;
  *
  * @author schafer
  */
-public class TableData {
+public class TableData implements Cloneable {
     private final int playerCount;       //How many people at the table
     private final int handsRemaining;    //How many hands remain after this one
     private final int handsPlayed;       //What hand # is this hand
@@ -292,6 +292,19 @@ public class TableData {
      * @return int currentBettor
      */
     public int getCurrentBettor() { return currentBettor; }
+
+    public Object clone() {
+        Object o = null;
+
+        try {
+            o = super.clone();
+        } catch (CloneNotSupportedException e) {
+            e.printStackTrace();
+        }
+
+        return o;
+
+    }
 
 
 }

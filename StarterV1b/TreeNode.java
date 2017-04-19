@@ -129,7 +129,7 @@ public class TreeNode<T> implements java.io.Serializable {
 
     public boolean isRoot() {
         boolean rBool = (name == "root");
-        System.out.println("rBool is: " + rBool);
+        //System.out.println("rBool is: " + rBool);
         return (name == "root");
     }
 
@@ -156,20 +156,20 @@ public class TreeNode<T> implements java.io.Serializable {
     public TreeNode<T> findChild(int[] inPocket, int[] inBoard, boolean isRoot) {
 
         if(this.children.size() == 0) {
-            System.out.println("findChild is returning because there are 0 children");
+            //System.out.println("findChild is returning because there are 0 children");
             return null;
         }
 
         for(TreeNode t : this.children) {
             if(isRoot) {
-                System.out.println("findChild evaluted that this is root");
+                //System.out.println("findChild evaluted that this is root");
                 if(Arrays.equals(t.getPocket(), inPocket)) {
                     return t;
                 } else {
                     return null;
                 }
             } else {
-                System.out.println("findChild evaluated that this is not root");
+                //System.out.println("findChild evaluated that this is not root");
                 if(Arrays.equals(t.getBoard(), inBoard)) {
                     return this;
                 } else {
@@ -181,6 +181,19 @@ public class TreeNode<T> implements java.io.Serializable {
         System.out.println("findChild is returning because something went wrong!");
         return null;
     }
+
+    public void recursionToRoot(TreeNode t) { 
+        //System.out.println(this.getDepth());
+        
+        if(this.name == "root") {
+            System.out.println(this.getDepth());
+            return;
+        } else {
+            System.out.println(this.getDepth());
+            recursionToRoot(this.parent);
+        }
+    }
+       
 
 
     public boolean hasChildren() { return !children.isEmpty();}

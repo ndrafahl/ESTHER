@@ -9,7 +9,7 @@
  */
 import java.util.Random;
 
-public class Dealer {
+public class Dealer implements Cloneable {
 
     private final Random random;
     private int seats;
@@ -104,5 +104,17 @@ public class Dealer {
             board[4] = deck[seats * 2 + 4];
         }
         return board;
+    }
+
+    public Object clone() {
+        Object o = null;
+
+        try {
+            o = super.clone();
+        } catch (CloneNotSupportedException e) {
+            e.printStackTrace();
+        }                
+        
+        return o;
     }
 }

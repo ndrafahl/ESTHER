@@ -68,7 +68,8 @@ public class GameManager {
         int[] limits = {1, 1, 1, 2, 2};
         this.bets = limits;
         this.raiseLimit = 3;
-        this.hands = 100 * players.length; // Controls the amount of hands played in a single "game"
+        this.hands = 10 * players.length; // Controls the amount of hands played in a single "game"
+        //this.hands = 1;
 
         gameLevelSetup();
     }
@@ -157,6 +158,8 @@ public class GameManager {
     private void manageBettingRound() {
         if (debug) {
             System.out.println("Dealing the next set of cards");
+            System.out.println("Entering manageBettingRound for round " + round + "(GameManager)");
+            System.out.println("Changing round to: " + (round + 1));
         }
         String response;
         round++;
@@ -170,7 +173,7 @@ public class GameManager {
         }
 
         while (activePlayers > 1 && actionsNeeded > 0) {
-            if (debug) { System.out.println("Action to " + currentBettor); }
+            if (debug) { System.out.println("Action to " + currentBettor + " where current boardsize is: " + dealer.getBoard(round).length); }
             if (stillIn[currentBettor]) {
                 String valid = "fold,";
                 if (raisesLeft > raiseLimit) {
