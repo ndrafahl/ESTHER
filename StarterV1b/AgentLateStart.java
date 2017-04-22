@@ -128,7 +128,7 @@ public class AgentLateStart extends Player {
             System.out.println("Finished \"new game\" where beginning simulation had an initial board size of: " + lastBoardSize);
             System.out.println("Beginning back propogation of nodes visited.");
 
-            backPropagate();
+            //backPropagate();
             simulate = true;
             System.out.println("Writing tree to .ser where nodeTotal is: " + nodeTotal);
             root.setTotalNodeCount(nodeTotal);
@@ -327,4 +327,28 @@ public class AgentLateStart extends Player {
     private int getNodeTotal() {
         return this.nodeTotal;
     }
+
+    @Override
+    public void handResults(Results r) {
+        System.out.println();
+        System.out.println("Hand is over.");
+        System.out.println("Winner(s):");
+        int winningHand = -1;
+        for (Integer i : r.getWhoWon()) {
+            System.out.print(" " + (i + 1));
+            winningHand = i;
+        }
+        System.out.println();
+
+        if(!simulate) {
+            backPropagate();
+        }
+
+        /*System.out.println("Winning hand was a "
+                + r.getOutcomes()[winningHand].toString());
+
+        System.out.println();
+        System.out.println("Starting next round of betting.");*/
+    }
+
 }

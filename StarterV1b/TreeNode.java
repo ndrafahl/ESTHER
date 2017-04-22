@@ -21,9 +21,17 @@ public class TreeNode<T> implements java.io.Serializable {
     private int depth;
 
     private int visits;
+
     private int betWins;
+    private int betPlays;
+    private int raiseWins;
+    private int raisePlays;
+    private int checkWins;
+    private int checkPlays;
     private int foldWins;
+    private int foldPlays;
     private int callWins;
+    private int callPlays;
 
     private int[] pocket;
     private int[] board;
