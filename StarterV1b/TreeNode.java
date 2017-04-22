@@ -98,9 +98,48 @@ public class TreeNode<T> implements java.io.Serializable {
         return this.name;
     }
 
-    public int getVisited() {
+    public int getVisitCount() {
         return this.visits;
     }
+
+    public int getActionWins(String action) {
+        if(action.equals("bet")) {
+            return this.betWins;
+        } else if(action.equals("fold")) {
+            return this.foldWins;
+        } else if(action.equals("call")) {
+            return this.callWins;
+        } else if(action.equals("raise")) {
+            return this.raiseWins;
+        } else if(action.equals("check")) {
+            return this.checkWins;
+        } else {
+            System.out.println("ERROR:  getActionWins recieved invalid action taken, quitting");
+            System.exit(1);
+        }
+
+        return 0;
+    }
+
+    public int getActionPlays(String action) {
+        if(action.equals("bet")) {
+            return this.betPlays;
+        } else if(action.equals("fold")) {
+            return this.foldPlays;
+        } else if(action.equals("call")) {
+            return this.callPlays;
+        } else if(action.equals("raise")) {
+            return this.raisePlays;
+        } else if(action.equals("check")) {
+            return this.checkPlays;
+        } else {
+            System.out.println("ERROR:  getActionPlays recieved invalid action taken, quitting");
+            System.exit(1);
+        }
+
+        return 0;
+    }
+
 
     public int getBetWins() {
         return this.betWins;
@@ -112,6 +151,22 @@ public class TreeNode<T> implements java.io.Serializable {
 
     public int getCallWins() {
         return this.callWins;
+    }
+
+    public int getRaiseWins() {
+        return this.raiseWins;
+    }
+
+    public int getCheckWins() {
+        return this.checkWins;
+    }
+
+    public int getBetPlays() {
+        return this.betPlays;
+    }
+
+    public int getFoldPlays() {
+        return this.foldPlays;
     }
 
 
@@ -252,5 +307,31 @@ public class TreeNode<T> implements java.io.Serializable {
 
     }
 
+    public void updateNodeStats(boolean gameWon, String action) {
+        if(action.equals("fold")) {
+            foldPlays++;
+            visits++;
+            if(gameWon) { foldWins++; }
+        } else if (action.equals("bet")) {
+            betPlays++;
+            visits++;
+            if(gameWon) { betWins++; }
+        } else if (action.equals("call")) {
+            callPlays++;
+            visits++;
+            if(gameWon) { callWins++; }
+        } else if (action.equals("raise")) {
+            raisePlays++;
+            visits++;
+            if(gameWon) { raiseWins++; }
+        } else if (action.equals("check")) {
+            checkPlays++;
+            visits++;
+            if(gameWon) { checkWins++; }
+        } else {
+            System.out.println("updateNodeStats got an invalid action, please review.");
+            System.out.println("gameWon was: " + gameWon + " and action was: " + action);
+        }
+    }
 }
 

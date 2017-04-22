@@ -132,7 +132,7 @@ public class AgentLateStart extends Player {
             simulate = true;
             System.out.println("Writing tree to .ser where nodeTotal is: " + nodeTotal);
             root.setTotalNodeCount(nodeTotal);
-            writeTree();
+            //writeTree();
         } else {
             // Code pulled from AgentRandomPlayer.  Return a random action so we can get on to the next round.  This will be updated to be based on whatever the
             // MCTS Agent decides to return based on the Algorithm.
@@ -179,7 +179,7 @@ public class AgentLateStart extends Player {
             // Add a "random" child to root, so we can test the import/export of the entire Tree structure
             root.setSerialChild(currentNode);
 
-            currentNode.recursionToRoot();
+            //currentNode.recursionToRoot();
 
 
             System.out.println("Emplacing into queue (else) with depth of: " + currentNode.getDepth());
@@ -191,26 +191,42 @@ public class AgentLateStart extends Player {
             Random randomGenerator = new Random();
             int index = randomGenerator.nextInt(choices.length);
 
-            while(choices[index].equals("fold")) {
+            String decisionMade = makeDecision(currentNode, choices);
+
+            /*while(choices[index].equals("fold")) {
                 System.out.println("Was going to return fold, picking new index.");
                 index = randomGenerator.nextInt(choices.length);
-            }
+            }*/
 
-            actionQueue.add(choices[index]);
-            System.out.println("Returning " + choices[index] + " to GameManagerSim from AgentLateStart");
+            /*actionQueue.add(choices[index]);
+            System.out.println("Returning " + choices[index] + " to GameManagerSim from AgentLateStart");*/
+            
+            actionQueue.add(decisionMade);
+            System.out.println("Returning " + decisionMade + " to GameManagerSim from AgentLateStart");
+
             System.out.println("nodeTotal = " + this.nodeTotal);
-            return choices[index];
+            //return choices[index];
+            
+            return decisionMade;
 
         }
 
         // This should only occur after the simulation has completed.
         String pull = data.getValidActions();
         String [] choices = pull.split(",");
+
+        String decisionMade = makeDecision(currentNode, choices);
+        System.out.println("decisionMade was: " + decisionMade);
+
+
         Random randomGenerator = new Random();
         int index = randomGenerator.nextInt(choices.length);
 
-        System.out.println("Returning " + choices[index] + " to GameManager from AgentLateStart");
-        return choices[index];
+        /*System.out.println("Returning " + choices[index] + " to GameManager from AgentLateStart");
+        return choices[index];*/
+
+        System.out.println("Returning " + decisionMade + " to GameManager from AgentLateStart");
+        return decisionMade;
     }
 
     private void generateLocalData(TableData data) {
@@ -255,7 +271,8 @@ public class AgentLateStart extends Player {
         System.out.println(tempPocket[0] + " " + tempPocket[1]);
     }
 
-    private void backPropagate() {
+    private void backPropagate(boolean simulationWon) {
+        System.out.println("entering backPropagate with a boolean of " + simulationWon);
         TreeNode backNode;
         String backAction;
 
@@ -272,6 +289,12 @@ public class AgentLateStart extends Player {
             backAction = actionQueue.getLast();
             //System.out.println("Depth : " + backNode.getDepth());
             System.out.println("Depth : " + backNode.getDepth() + " Action to get here: " + backAction);
+
+            System.out.println("Stats for this node before update: " + backNode.getActionPlays(backAction) + " " + backNode.getActionWins(backAction) + " " + backNode.getVisitCount());
+            backNode.updateNodeStats(simulationWon, backAction);
+            System.out.println("Stats after update: " + backNode.getActionPlays(backAction) + " " + backNode.getActionWins(backAction) + " " + backNode.getVisitCount());
+
+
             actionQueue.removeLast();
             queue.removeLast();
         }     
@@ -305,7 +328,8 @@ public class AgentLateStart extends Player {
         }catch(IOException i) {
             root = new TreeNode("root");
             nodeTotal = 1;
-            i.printStackTrace();
+            //i.printStackTrace();
+            System.out.println("treenode.ser not found, creating new root node");
             return;
         }catch(ClassNotFoundException e) {
             System.out.println("TreeNode class not found");
@@ -320,9 +344,45 @@ public class AgentLateStart extends Player {
     // N = num of simulations after move
     // C = exploration paramter. sqrt(2) is good first guess. Adjust it to fit
     // T = total num of simulations. N of parent node
-    private double mctsAlg(int w, int n, int c, int t){
+    private double mctsAlg(int w, int n, int t){
+        double c = sqrt(2);
+
         return (w/n) + c * (sqrt(log(t) / n));
     }
+
+    private String makeDecision(TreeNode inputNode, String[] choices) {
+        System.out.println("Entering makeDecision");
+
+        int indexToReturn = -1;
+        double mctsValue = -1;
+        String currentChoice;
+
+        // For each available action, let's pull data from the currentNode we're at to make a decision
+        // on what we're going to return for our "choice"
+        for(int i = 0; i < choices.length; i++) {
+            currentChoice = choices[i];
+
+            // if we've never played any of the current choices we have before, we want to make sure to play it at least once, so we're going to return it.
+            if(inputNode.getActionPlays(currentChoice) == 0) {
+                System.out.println("makeDecision is returning early because we had no data for the choice: " + currentChoice);
+                return choices[i];
+            // else, we have data for the current choice, let's calculate the MCTS "value" for the stats we have for that action at this state of the game
+            } else {
+                double newMCTSValue = mctsAlg(inputNode.getActionWins(currentChoice), inputNode.getActionPlays(currentChoice), inputNode.getVisitCount());
+                System.out.println("newMCTSValue for choice " + currentChoice + " is " + newMCTSValue + " from the data (Wins, Plays, VisitCount) "
+                        + inputNode.getActionWins(currentChoice) + " " + inputNode.getActionPlays(currentChoice) + " " + inputNode.getVisitCount());
+                // if the newMCTSValue is greater than the previous one we've set (or the intialized value) let's set that we're going to return that action to the game
+                if (newMCTSValue > mctsValue) {
+                    indexToReturn = i;
+                }
+            }
+        }
+
+
+        return choices[indexToReturn];
+        
+    } 
+    
 
     private int getNodeTotal() {
         return this.nodeTotal;
@@ -330,18 +390,25 @@ public class AgentLateStart extends Player {
 
     @Override
     public void handResults(Results r) {
+        boolean simulationWon = false;
+
         System.out.println();
         System.out.println("Hand is over.");
-        System.out.println("Winner(s):");
+        System.out.print("Winner(s):");
         int winningHand = -1;
         for (Integer i : r.getWhoWon()) {
-            System.out.print(" " + (i + 1));
+            if(i == this.num) {
+                System.out.println("AgentLateStart won!");
+                simulationWon = true;
+            }
+
+            System.out.print(" " + (i));
             winningHand = i;
         }
         System.out.println();
 
         if(!simulate) {
-            backPropagate();
+            backPropagate(simulationWon);
         }
 
         /*System.out.println("Winning hand was a "
