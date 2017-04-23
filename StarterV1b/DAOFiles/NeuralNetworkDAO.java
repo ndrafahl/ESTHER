@@ -41,10 +41,11 @@ public class NeuralNetworkDAO  {
         //This line checks if there is another neural network to be constructed from the file.
         numOfInputs = Integer.valueOf(fileIn.nextLine());   //The first line of each neural network is the number of input neurons.
         inputWeights = new double[numOfInputs][];           //Constructs a double array the size of the number of inputs. This stores an array of each neuron weights.
-        inputBias = new double[numOfInputs];                //Same as above but stores the bias for each input neuron.
+        inputBias = new double[numOfInputs];
+        temp = fileIn.nextLine().split(",");
         for (x = 0; x < numOfInputs; x++) {                   //This for-loop reads the input weights into an array of arrays.
-            temp = fileIn.nextLine().split(",");
-            inputWeights[x][0] = Double.valueOf(temp[x]);
+            double[] tempDouble = {Double.valueOf(temp[x])};
+            inputWeights[x] = tempDouble;
         }
         temp = fileIn.nextLine().split(",");
         for (x = 0; x < numOfInputs; x++) {                   //This for-loop takes the string bias and turn them to doubles and places them in the input bias array.
@@ -57,28 +58,36 @@ public class NeuralNetworkDAO  {
             numOfNeuronsPerLayer[x] = Integer.valueOf(temp[x]);
         }
         hiddenLayerWeights = new double[numOfHiddenLayers][][];
-        for (x = 0; x < numOfHiddenLayers; x++) {                  //Reads in the weights for each neuron in each hidden layer.
+        for (x = 0; x < numOfHiddenLayers; x++) {                //Reads in the weights for each neuron in each hidden layer.
+            double[][] temp2DArray = new double[numOfNeuronsPerLayer[x]][];
             for (y = 0; y < numOfNeuronsPerLayer[x]; y++) {
                 temp = fileIn.nextLine().split(",");
+                double[] tempDouble = new double[temp.length];
                 for (int z = 0; z < temp.length; z++) {
-                    hiddenLayerWeights[x][y][z] = Double.valueOf(temp[z]);
+                    tempDouble[z] = Double.valueOf(temp[z]);
                 }
+                temp2DArray[y] = tempDouble;
             }
+            hiddenLayerWeights[x] = temp2DArray;
         }
         hiddenLayerBias = new double[numOfHiddenLayers][];
         for (x = 0; x < numOfHiddenLayers; x++) {                    //Reads in the bias for each neuron in each hidden layer.
             temp = fileIn.nextLine().split(",");
+            double[] tempDouble = new double[temp.length];
             for (y = 0; y < temp.length; y++) {
-                hiddenLayerBias[x][y] = Double.valueOf(temp[y]);
+                tempDouble[y] = Double.valueOf(temp[y]);
             }
+            hiddenLayerBias[x] = tempDouble;
         }
         numOfOutputs = Integer.valueOf(fileIn.nextLine());          //Output layer size.
         outputWeights = new double[numOfOutputs][];
         for (x = 0; x < numOfOutputs; x++) {                         //Reads the weights for each neuron in the output layer.
             temp = fileIn.nextLine().split(",");
+            double[] tempDouble = new double[temp.length];
             for (y = 0; y < temp.length; y++) {
-                outputWeights[x][y] = Double.valueOf(temp[y]);
+                tempDouble[y] = Double.valueOf(temp[y]);
             }
+            outputWeights[x] = tempDouble;
         }
         outputBias = new double[numOfOutputs];
         temp = fileIn.nextLine().split(",");
@@ -112,11 +121,12 @@ public class NeuralNetworkDAO  {
         int i;
 
         try{
-            fileOut = new FileWriter(filePath, true);     //This is a file writer that appends to the end of the file instead of overwriting it.
+            fileOut = new FileWriter(filePath);     //This is a file writer that appends to the end of the file instead of overwriting it.
             fileOut.write(String.valueOf(neuralNetwork.getNumOfInputs()) + "\r\n");               //The rest of the code just writes all the variables from the blueprint to its own line in the same way it is read above.
-            for(i = 0; i < neuralNetwork.getNumOfInputs(); i++){
-                fileOut.write(String.valueOf(neuralNetwork.getInputWeights()[i][0]) + "\r\n");
+            for(i = 0; i < neuralNetwork.getNumOfInputs() -1 ; i++){
+                fileOut.write(String.valueOf(neuralNetwork.getInputWeights()[i][0]) + ",");
             }
+            fileOut.write(String.valueOf(neuralNetwork.getInputWeights()[neuralNetwork.getNumOfInputs()-1][0]) + "\r\n");
             for(i = 0; i < neuralNetwork.getInputBias().length - 1; i++){
                 fileOut.write(String.valueOf(neuralNetwork.getInputBias()[i]) + ",");
             }
@@ -145,12 +155,12 @@ public class NeuralNetworkDAO  {
                 for(int j = 0; j < neuralNetwork.getOutputWeights()[i].length - 1; j++){
                     fileOut.write(String.valueOf(neuralNetwork.getOutputWeights()[i][j]) + ",");
                 }
-                fileOut.write(String.valueOf(neuralNetwork.getOutputWeights()[i][neuralNetwork.getHiddenLayerBias()[i].length - 1]) + "\r\n");
+                fileOut.write(String.valueOf(neuralNetwork.getOutputWeights()[i][neuralNetwork.getOutputWeights()[i].length - 1]) + "\r\n");
             }
             for(i = 0; i < neuralNetwork.getOutputBias().length - 1; i++){
                 fileOut.write(String.valueOf(neuralNetwork.getOutputBias()[i]) + ",");
             }
-            fileOut.write(String.valueOf(neuralNetwork.getNumOfNeuronsPerLayer()[neuralNetwork.getOutputBias().length - 1]) + "\r\n");
+            fileOut.write(String.valueOf(neuralNetwork.getOutputBias()[neuralNetwork.getOutputBias().length - 1]) + "\r\n");
 
             fileOut.close();
 

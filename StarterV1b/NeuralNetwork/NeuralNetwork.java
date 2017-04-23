@@ -46,8 +46,11 @@ public class NeuralNetwork {
         }
         switch (maxOutputIndex){
             case 0: output = "bet";
+                    break;
             case 1: output = "call";
+                    break;
             case 2: output = "fold";
+                    break;
             default: output = "fold";
         }
         return output;

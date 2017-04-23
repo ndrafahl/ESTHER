@@ -26,6 +26,9 @@ public class NeuralNetworkPlayer extends Player {
     int handNumber;
     double[] winRateArray = new double[169];
     double callThreshold, raiseThreshold;
+    int[] inputArray;
+    InputData inputData;
+
 
     /**********************************************************************
      * Constructors
@@ -39,7 +42,7 @@ public class NeuralNetworkPlayer extends Player {
 
 
     public NeuralNetworkPlayer(String name) throws IOException{
-        bluePrint = new NeuralNetworkBluePrint(25, 3);
+        bluePrint = new NeuralNetworkBluePrint(54, 3);
         neuralNetwork = new NeuralNetwork(bluePrint);
         winRateArray = createWinRateArray();
 
@@ -95,6 +98,14 @@ public class NeuralNetworkPlayer extends Player {
         winRateArray = createWinRateArray();
         initThresholds();
     }
+    public NeuralNetworkPlayer(NeuralNetworkBluePrint bluePrint, double[] winRateArray){
+        name = "Samuel";
+        neuralNetwork = new NeuralNetwork(bluePrint);
+        this.bluePrint = bluePrint;
+        this.winRateArray = winRateArray;
+    }
+
+
 
     private double[] createWinRateArray() throws IOException {
         Scanner fileIn;
@@ -196,9 +207,12 @@ public class NeuralNetworkPlayer extends Player {
 
         else {
 
-            /*InputData inputData = new InputData(data);
 
-            String decision = neuralNetwork.makeDecision(inputData.getInputList());
+            inputArray = inputData.getInputList(data);
+
+
+            String decision = neuralNetwork.makeDecision(inputArray);
+            //System.out.println(decision);
 
             if (decision == "fold" && pull.contains("check")) {
                 return "check";
@@ -212,14 +226,8 @@ public class NeuralNetworkPlayer extends Player {
                 return "check";
             } else {
                 return "fold";
-            }*/
-            String decision = "call";
-            if(pull.contains(decision)){
-                return decision;
             }
-            else{
-                return "check";
-            }
+
         }
     }
 
