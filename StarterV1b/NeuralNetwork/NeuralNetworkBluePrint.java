@@ -30,8 +30,8 @@ public class NeuralNetworkBluePrint implements Cloneable {
     private int maxNumOfLayers, maxNumOfNeurons, maxBias, maxWeight;
 
     public NeuralNetworkBluePrint(int inputSize, int outputSize){
-        maxNumOfLayers = 7;            //This is hardcoded so we only have to change the max in spot to change the rest of the network.
-        maxNumOfNeurons = 15;          //Same as above for this line.
+        maxNumOfLayers = 3;            //This is hardcoded so we only have to change the max in spot to change the rest of the network.
+        maxNumOfNeurons = 30;          //Same as above for this line.
         maxBias = 5;                   //This is the maximum random bias value for a neuron.
         maxWeight = 1;                 //This is the maximum random weight value for a neuron.
         Random randLayers = new Random();

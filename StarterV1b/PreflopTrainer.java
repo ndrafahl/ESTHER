@@ -28,7 +28,7 @@ public class PreflopTrainer {
 
         for(int i = 0; i < 6; i++){
             playerList[i].setRaiseThreshold(.22);
-            playerList[i].setCallThreshold(.16);
+            playerList[i].setCallThreshold(.155);
         }
         Dealer dealer = new Dealer(playerList.length);
         globalBestBankroll = 0;
@@ -58,8 +58,8 @@ public class PreflopTrainer {
                     playerList[j].setRaiseThreshold(playerList[j].getRaiseThreshold() - .001);
                 }
 
-                if(playerList[j].getRaiseThreshold() < .2 || playerList[j].getRaiseThreshold() > .56){
-                    playerList[j].setRaiseThreshold(.3);
+                if(playerList[j].getRaiseThreshold() < .16 || playerList[j].getRaiseThreshold() > .56){
+                    playerList[j].setRaiseThreshold(.16);
                 }
             }
         }
@@ -74,9 +74,9 @@ public class PreflopTrainer {
         int tempInt;
         double tempDouble;
         boolean changeMade;
-        for(int i = 0; i < trainingSize - 1; i++) {
+        for(int i = trainingSize - 1; i > 0; i--) {
             changeMade = false;
-            for (int j = i; j < trainingSize - 1; j++) {
+            for (int j = 0; j < i; j++) {
                 if (winningThresholds[j] < winningThresholds[j + 1]) {
                     tempInt = winningBankroll[j];
                     winningBankroll[j] = winningBankroll[j + 1];

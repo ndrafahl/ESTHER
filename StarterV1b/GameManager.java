@@ -74,7 +74,7 @@ public class GameManager {
     }
 
     public int[] playGame() {
-        System.out.println("Let's play cards!");
+        //System.out.println("Let's play cards!");
 
         //Loop for each hand
         for (handNumber = 1; handNumber < hands + 1; handNumber++) {

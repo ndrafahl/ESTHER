@@ -4,6 +4,7 @@
  * and open the template in the editor.
  */
 
+import DAOFiles.NeuralNetworkDAO;
 import NeuralNetwork.NeuralNetworkBluePrint;
 
 import java.io.IOException;
@@ -26,26 +27,28 @@ public class ESTHER {
         //         after each GAME the players shift one seat and the GAME
         //         is repeated (with the same hands from the previous GAME)
 
-        int mode = 2;
+        int mode = 4;
 
-
-        Player[] players = new Player[6];
+        int[] limits = {1,1,1,2,2};
+        Player[] players = new Player[4];
 
 
         //Adjust the right side of these assignments to select new agents
-        players[0] = new AgentRandomPlayer(1);
-        players[1] = new AgentAlwaysCall(1);
-        players[2] = new AgentRandomPlayer(2);
+        //players[0] = new AgentRandomPlayer(1);
+        players[0] = new AgentAlwaysCall(1);
+        players[1] = new NeuralNetworkPlayer("5b","test5.best");
+        players[2] = new NeuralNetworkPlayer("2b","test2.best");
+        //players[2] = new AgentRandomPlayer(2);
         //players[2] = new AgentLateStart(2);
-        players[3] = new AgentAlwaysRaise(1);
-        players[4] = new AgentRandomPlayer(3);
+        //players[3] = new AgentAlwaysRaise(1);
+        //players[4] = new AgentRandomPlayer(3);
         //players[5] = new AgentRandomPlayer(3);
-        players[5] = new NeuralNetworkPlayer("me");
-        //players[5] = new AgentHumanCommandLine();
+        players[3] = new NeuralNetworkPlayer("6b","test6.best");
+        //players[1] = new AgentHumanCommandLine();
         //System.out.println("You will be player #6");
 
         if (mode == 1) {
-            Dealer dealer = new Dealer(players.length, 123456789);
+            Dealer dealer = new Dealer(players.length);
             GameManager g = new GameManager(players, dealer, false);
             int[] end = g.playGame();
             System.out.println("Final Totals");
@@ -109,13 +112,14 @@ public class ESTHER {
         }
 
         if (mode == 4) {
-            TrainingFunction trainer = new TrainingFunction();
-            try {
-                trainer.generateData("new250LimitResultsWithVarRound.arff");
-            } catch (IOException e) {
-                throw e;
+            Dealer dealer = new Dealer(players.length);
+            GameManager g = new GameManager(players, dealer, false, limits, 3, 10000);
+            int[] end = g.playGame();
+            System.out.println("Final Totals");
+            for (int x = 0; x < end.length; x++) {
+                System.out.println((x + 1) + " "
+                        + players[x].getScreenName() + " had " + end[x]);
             }
-
 
         }
 
@@ -129,6 +133,18 @@ public class ESTHER {
 
         if(mode == 6){
             PreflopTrainer.trainPreflop();
+        }
+
+        if(mode == 7){
+            GATrainingFunc trainer = new GATrainingFunc();
+            trainer.GAtrainingFunc(1000,36,4,4,4,4,
+                    8,8,2,2,300,"test1.");
+        }
+
+        if(mode == 8){
+            NeuralNetworkDAO fileDAO = new NeuralNetworkDAO();
+            NeuralNetworkBluePrint bluePrint = fileDAO.loadNeuralNetworkList("test6.best");
+            System.out.println(String.valueOf(bluePrint.getNumOfInputs()));
         }
 
     }
