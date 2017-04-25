@@ -68,7 +68,7 @@ public class GameManager {
         int[] limits = {1, 1, 1, 2, 2};
         this.bets = limits;
         this.raiseLimit = 3;
-        this.hands = 100 * players.length; // Controls the amount of hands played in a single "game"
+        this.hands = 10 * players.length; // Controls the amount of hands played in a single "game"
         //this.hands = 1;
 
         gameLevelSetup();

@@ -138,7 +138,7 @@ public class AgentLateStart extends Player {
 
                 int simulationsRan = 0;
 
-                for(long stop = System.nanoTime()+TimeUnit.SECONDS.toNanos(2); stop > System.nanoTime(); ) {
+                for(long stop = System.nanoTime()+TimeUnit.SECONDS.toNanos(1); stop > System.nanoTime(); ) {
 
                     generateLocalData( (TableData) data.clone());        
 
@@ -358,7 +358,7 @@ public class AgentLateStart extends Player {
     private double mctsAlg(int w, int n, int t){
         double c = sqrt(2);
 
-        return (w/n) + c * (sqrt(log(t) / n));
+        return ((w/n) + (c * (sqrt(log(t) / n))));
     }
 
     private int makeDecision(TreeNode inputNode, String[] choices) {
@@ -372,6 +372,7 @@ public class AgentLateStart extends Player {
         // on what we're going to return for our "choice"
         for(int i = 0; i < choices.length; i++) {
             currentChoice = choices[i];
+            System.out.println("currentChoice = " + currentChoice);
 
             // if we've never played any of the current choices we have before, we want to make sure to play it at least once, so we're going to return it.
             if(inputNode.getActionPlays(currentChoice) == 0) {
@@ -383,12 +384,22 @@ public class AgentLateStart extends Player {
             // else, we have data for the current choice, let's calculate the MCTS "value" for the stats we have for that action at this state of the game
             } else {
                 double newMCTSValue = mctsAlg(inputNode.getActionWins(currentChoice), inputNode.getActionPlays(currentChoice), inputNode.getVisitCount());
+
+                if(currentChoice.equals("fold")) {
+                    System.out.println("fold, adjusting newmctsvalue");
+                    newMCTSValue = newMCTSValue - .25;
+                }
+
                 System.out.println("newMCTSValue for choice " + currentChoice + " is " + newMCTSValue + " from the data (Wins, Plays, VisitCount) "
                         + inputNode.getActionWins(currentChoice) + " " + inputNode.getActionPlays(currentChoice) + " " + inputNode.getVisitCount());
                 // if the newMCTSValue is greater than the previous one we've set (or the intialized value) let's set that we're going to return that action to the game
+
                 if (newMCTSValue > mctsValue) {
+                    System.out.println("Replacing mctsValue with the choice of " + currentChoice + " " + newMCTSValue +  " > " + mctsValue);
                     mctsValue = newMCTSValue;
                     indexToReturn = i;
+                } else {
+                    System.out.println("newMCTSValue was not greater than mctsValue " + newMCTSValue + " " + " < " + mctsValue);
                 }
             }
         }

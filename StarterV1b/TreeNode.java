@@ -82,8 +82,8 @@ public class TreeNode<T> implements java.io.Serializable {
         child.setDepth(this.depth);
     }
 
-    private void setParent(TreeNode<T> parent){
-        this.parent = parent;
+    private void setParent(TreeNode<T> aParent){
+        this.parent = aParent;
     }
 
     public TreeNode<T> getParent(){
