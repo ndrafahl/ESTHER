@@ -68,7 +68,8 @@ public class GameManager {
         int[] limits = {1, 1, 1, 2, 2};
         this.bets = limits;
         this.raiseLimit = 3;
-        this.hands = 10 * players.length; // Controls the amount of hands played in a single "game"
+        this.hands = 1 * players.length; // Controls the amount of hands played in a single "game"
+        //this.hands = 1;
 
         gameLevelSetup();
     }
@@ -83,7 +84,7 @@ public class GameManager {
 
             if (debug) {
                 System.out.println("DEBUG is on.");
-                System.out.println("Button with player " + (button + 1) );
+                System.out.println("Button with player " + (button) + " (GameManager)");
             }
 
             //Everyone ante
@@ -92,7 +93,8 @@ public class GameManager {
                 bank[x] -= bets[1];
                 handActions[0].add((x+1)+",ante");
                 if (debug) {
-                    System.out.print((x+1) + " ");
+                    //System.out.print((x+1) + " ");
+                    System.out.print(x + " ");
                     System.out.print("" + EstherTools.intCardToStringCard(dealer.getPocket(x)[0]));
                     System.out.println(" " + EstherTools.intCardToStringCard(dealer.getPocket(x)[1]));
                 }
@@ -125,6 +127,7 @@ public class GameManager {
     //private helper methods
     private void gameLevelSetup() {
         button = -1;
+        System.out.println("gameLevelSetup() in GameManager called.  Button = " + button);
         handNumber = 0;
         stillIn = new boolean[players.length];
         playerStakes = new int[players.length];
@@ -136,6 +139,8 @@ public class GameManager {
 
     private void handLevelSetup(int hand) {
         button = (button + 1) % players.length;
+        System.out.println("handLevelSetup in GameManager called at hand " + hand + " and button is now " + button);
+
         for (int x = 0; x < players.length; x++) {
             stillIn[x] = true;
             players[x].newHand(hand, bank);
@@ -153,19 +158,22 @@ public class GameManager {
     private void manageBettingRound() {
         if (debug) {
             System.out.println("Dealing the next set of cards");
+            System.out.println("Entering manageBettingRound for round " + round + "(GameManager)");
+            System.out.println("Changing round to: " + (round + 1));
         }
         String response;
         round++;
         raisesLeft = raiseLimit + 1;
         int actionsNeeded = activePlayers;
         currentBettor = (button + 1) % players.length;
+        int currentBettorX = currentBettor - 1;
         tableStakes = 0;
         for (int x = 0; x < playerStakes.length; x++) {
             playerStakes[x] = 0;
         }
 
         while (activePlayers > 1 && actionsNeeded > 0) {
-            if (debug) { System.out.println("Action to "+currentBettor); }
+            if (debug) { System.out.println("Action to " + currentBettor + " where current boardsize is: " + dealer.getBoard(round).length); }
             if (stillIn[currentBettor]) {
                 String valid = "fold,";
                 if (raisesLeft > raiseLimit) {
@@ -202,6 +210,7 @@ public class GameManager {
                 response = players[currentBettor].getAction(td);
                 if (debug) { System.out.println("GameManager got response from " + players[currentBettor].getScreenName()
                         + "(" + currentBettor + ")");; }
+                if (debug) { System.out.println("Response was : " + response + "\n"); }
 
                 if (!valid.contains(response)) {
                     System.out.println("ERROR");
@@ -251,6 +260,7 @@ public class GameManager {
             handActions[round].add("(" + (currentBettor + 1) + "," + response + ")");
 
             currentBettor = (currentBettor + 1) % players.length;
+            currentBettorX = (currentBettorX + 1) % players.length;
 
         }
     }
