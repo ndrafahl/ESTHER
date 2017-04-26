@@ -9,13 +9,12 @@ import java.util.Arrays;
  */
 
 
-public class TreeNode<T> implements java.io.Serializable {
+public class TreeNode implements java.io.Serializable {
 
-    private T data;
-    private TreeNode<T> parent;
-    private List<TreeNode<T>> children;
+    private TreeNode parent;
+    private List<TreeNode> children;
 
-    private TreeNode<T> serialChild;
+    private TreeNode serialChild;
 
     private String name;
     private int depth;
@@ -38,15 +37,10 @@ public class TreeNode<T> implements java.io.Serializable {
 
     private int totalNodeCount;
 
-    public TreeNode(T data) {
-        this.data = data;
-        this.children = new LinkedList<TreeNode<T>>();
-    }
-
     public TreeNode(String aName) {
 	    this.name = aName;
         this.depth = 0;
-        this.children = new LinkedList<TreeNode<T>>();
+        this.children = new LinkedList<TreeNode>();
     }
 
     public TreeNode(int[] aBoard) {
@@ -56,7 +50,7 @@ public class TreeNode<T> implements java.io.Serializable {
 	    this.betWins = 0;
 	    this.foldWins = 0;
 	    this.callWins = 0;
-	    this.children = new LinkedList<TreeNode<T>>();
+	    this.children = new LinkedList<TreeNode>();
     }
 
     public TreeNode(int[] aPocket, int[] aBoard) {
@@ -67,31 +61,21 @@ public class TreeNode<T> implements java.io.Serializable {
         this.betWins = 0;
         this.foldWins = 0;
         this.callWins = 0;
-        this.children = new LinkedList<TreeNode<T>>();
+        this.children = new LinkedList<TreeNode>();
     }
 
-    public void addChild(T child) {
-        TreeNode<T> childNode = new TreeNode<T>(child);
-        childNode.setParent(this);
-        this.children.add(childNode);
-        // return childNode;             //want to return child node?
-    }
     public void addChild(TreeNode child){
         child.setParent(this);
         this.children.add(child);
         child.setDepth(this.depth);
     }
 
-    private void setParent(TreeNode<T> aParent){
+    private void setParent(TreeNode aParent){
         this.parent = aParent;
     }
 
-    public TreeNode<T> getParent(){
+    public TreeNode getParent(){
         return this.parent;
-    }
-
-    public T getData(){
-        return this.data;
     }
 
     public String getName() {
@@ -186,7 +170,7 @@ public class TreeNode<T> implements java.io.Serializable {
         this.depth = aDepth + 1;
     }
 
-    public List<TreeNode<T>> getChildren(){
+    public List<TreeNode> getChildren(){
         return this.children;
     }
 
@@ -200,7 +184,7 @@ public class TreeNode<T> implements java.io.Serializable {
         return (name == "root");
     }
 
-    public TreeNode<T> findChild(int[] intArray) {
+    /*public TreeNode findChild(int[] intArray) {
         for(TreeNode t : this.children) {
             if(this.name == "root" || this.parent.getName() == "root") {
                 if(Arrays.equals(t.getPocket(), intArray)) {
@@ -218,9 +202,9 @@ public class TreeNode<T> implements java.io.Serializable {
         }
 
         return null;
-    }
+    }*/
 
-    public TreeNode<T> findChild(int[] inPocket, int[] inBoard, boolean isRoot) {
+    public TreeNode findChild(int[] inPocket, int[] inBoard, boolean isRoot) {
 
         if(this.children.size() == 0) {
             //System.out.println("findChild is returning because there are 0 children");
@@ -247,6 +231,12 @@ public class TreeNode<T> implements java.io.Serializable {
 
         System.out.println("findChild is returning because something went wrong!");
         return null;
+    }
+
+    public void printChildrenDepths() {
+        for (TreeNode node : this.getChildren()) {
+            System.out.println(node.getDepth() + " ");
+        }
     }
 
     public void recursionToRoot() {
@@ -281,7 +271,7 @@ public class TreeNode<T> implements java.io.Serializable {
         this.serialChild = t;
     }
        
-    public TreeNode<T> getSerialChild() {
+    public TreeNode getSerialChild() {
         return this.serialChild;
     }
 
@@ -296,38 +286,29 @@ public class TreeNode<T> implements java.io.Serializable {
     public boolean hasChildren() { return !children.isEmpty();}
     // other features ...
 
-    public void readChildren(TreeNode<T> node){
-        for (TreeNode child : node.getChildren()) {
-            System.out.println(child.getData());
-            if(child.hasChildren()){
-                System.out.println("Has grandchild!");
-                readChildren(child);
-            }
-        }
-
-    }
-
     public void updateNodeStats(boolean gameWon, String action) {
+        System.out.println("updatedNodeStats called with gameWon = " + gameWon);
+
         if(action.equals("fold")) {
-            foldPlays++;
-            visits++;
-            if(gameWon) { foldWins++; }
+            this.foldPlays++;
+            this.visits++;
+            if(gameWon) { this.foldWins++; }
         } else if (action.equals("bet")) {
-            betPlays++;
-            visits++;
-            if(gameWon) { betWins++; }
+            this.betPlays++;
+            this.visits++;
+            if(gameWon) { this.betWins++; }
         } else if (action.equals("call")) {
-            callPlays++;
-            visits++;
-            if(gameWon) { callWins++; }
+            this.callPlays++;
+            this.visits++;
+            if(gameWon) { this.callWins++; }
         } else if (action.equals("raise")) {
-            raisePlays++;
-            visits++;
-            if(gameWon) { raiseWins++; }
+            this.raisePlays++;
+            this.visits++;
+            if(gameWon) { this.raiseWins++; }
         } else if (action.equals("check")) {
-            checkPlays++;
-            visits++;
-            if(gameWon) { checkWins++; }
+            this.checkPlays++;
+            this.visits++;
+            if(gameWon) { this.checkWins++; }
         } else {
             System.out.println("updateNodeStats got an invalid action, please review.");
             System.out.println("gameWon was: " + gameWon + " and action was: " + action);

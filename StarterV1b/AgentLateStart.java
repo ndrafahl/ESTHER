@@ -36,6 +36,7 @@ public class AgentLateStart extends Player {
 
     private boolean simulate;
     private int lastBoardSize;
+    private int lastRealBoardSize;
 
     private int nodeTotal;
 
@@ -46,16 +47,6 @@ public class AgentLateStart extends Player {
 
     public AgentLateStart (int num) {
         this.num = num;
-	    /*root = new TreeNode("root");
-        currentNode = root;
-        simulate = true;
-        this.queue = new LinkedList<TreeNode>();
-        this.actionQueue = new LinkedList<String>();
-
-        lastSimNode = root;
-        lastNode = root;
-
-        nodeTotal = 1; // Includes root */
 
         if (SERIALIZE) {
             System.out.println("Serialize is True, reading in root");
@@ -68,20 +59,15 @@ public class AgentLateStart extends Player {
             nodeTotal = 1;
         }
 
-        //curentNode = root;
         simulate = true;
         this.queue = new LinkedList<TreeNode>();
         this.actionQueue = new LinkedList<String>();
-        //this.readTree();
 
         lastSimNode = root;
         lastNode = root;
         currentNode = root;
-
-        /*TreeNode randomNode = root.getSerialChild();
-
-        System.out.println("printing randomNode");
-        randomNode.recursionToRoot(); */
+        lastBoardSize = 0;
+        lastRealBoardSize = 0;
     }
 
     @Override
@@ -109,24 +95,38 @@ public class AgentLateStart extends Player {
             String[] choices = pull.split(",");
             Arrays.sort(choices);
 
-            TreeNode tempNode = lastSimNode.findChild(tempPocket, tempBoard, lastSimNode.isRoot());
+            TreeNode sTempNode;
 
-            if(tempNode == null) {
+            if(data.getBoard().length == 0) {
+                sTempNode = root.findChild(tempPocket, tempBoard, root.isRoot());
+            } else {
+                if(lastRealBoardSize == data.getBoard().length) {
+                    sTempNode = lastSimNode;
+                } else {
+                    sTempNode = lastSimNode.findChild(tempPocket, tempBoard, lastSimNode.isRoot());
+                }
+            }
+
+            //TreeNode tempNode = lastSimNode.findChild(tempPocket, tempBoard, lastSimNode.isRoot());
+
+            if(sTempNode == null) {
                 nodeFound = false;
-                tempNode = new TreeNode(tempPocket, tempBoard);
-                lastSimNode.addChild(tempNode);
+                sTempNode = new TreeNode(tempPocket, tempBoard);
+                lastSimNode.addChild(sTempNode);
                 nodeTotal++;
                 simulate = false;
+                System.out.println("in simulate, added new node to lastSimNode: " + lastSimNode.getDepth() + " " + sTempNode.getDepth());
             } else {
                 nodeFound = true;
             }
 
-            currentNode = tempNode;
+            currentNode = sTempNode;
 
 
 
             if(nodeFound) {
                 choice = makeDecision(currentNode, choices);
+                lastSimNode = currentNode;
             } else {
                 choice = -1;
             }
@@ -144,18 +144,22 @@ public class AgentLateStart extends Player {
 
                     System.out.println("Simluations ran so far: " + simulationsRan);
                     
-                    GameManagerSim g = new GameManagerSim(simPlayers, dealer, true, limits, 3, 1, simWhosIn,
+                    /*GameManagerSim g = new GameManagerSim(simPlayers, dealer, true, limits, 3, 1, simWhosIn,
+                        simPlayerStakes, simBank, localData);*/
+
+                    GameManagerSim g = new GameManagerSim(data.getPlayers(), dealer, false, limits, 3, 1, simWhosIn,
                         simPlayerStakes, simBank, localData);
+
 
                     int[] end = g.playGame(data);
 
                     simulationsRan++;
 
-                    System.out.println("Final Totals (AgentLateStart)");
+                    /*System.out.println("Final Totals (AgentLateStart)");
                     for (int x = 0; x < end.length; x++) {
                     System.out.println((x + 1) + " "
                         + data.getPlayers()[x].getScreenName() + " had " + end[x]);
-                    }
+                    }*/
 
                     // Confirmation the game ended.
                     System.out.println("Finished \"new game\" where beginning simulation had an initial board size of: " + lastBoardSize);
@@ -169,18 +173,21 @@ public class AgentLateStart extends Player {
 
                 choice = makeDecision(simStartNode, choices);
                 simulate = true;
+                lastSimNode = simStartNode;
+                lastRealBoardSize = data.getBoard().length;
             } /*else {
                 return choices[choice];
             } */
 
-            System.out.println("Returning " + choices[choice] + " to GameManager");
+            simulate = true;
+            System.out.println("MCTS Agent is returning " + choices[choice] + " to GameManager");
             return choices[choice];
 
         } else {
             // Code pulled from AgentRandomPlayer.  Return a random action so we can get on to the next round.  This will be updated to be based on whatever the
             // MCTS Agent decides to return based on the Algorithm.
             
-            System.out.println("Entering else statement with a boardsize of: " + data.getBoard().length);
+            boolean lastNodeUsed = false;     
 
             if(data.getBoard().length == 0) {
                 System.out.println("Searching root");
@@ -193,36 +200,41 @@ public class AgentLateStart extends Player {
                     currentNode = simStartNode;
                 } else {
                     if(lastBoardSize == data.getBoard().length) {
-                        currentNode = lastNode;
+                        lastNodeUsed = true;
+                        currentNode = lastNode;                       
+                        System.out.println("board length was same as last run, using lastNode: " + currentNode.getDepth());
                     } else {
                         currentNode = queue.getLast();
+                        System.out.println("board length not the same as last run, using end of queue: " + currentNode.getDepth());
+
                     }
                 }
                 //currentNode = queue.getLast();
                 //TreeNode tempNode = currentNode.findChild(tempPocket, tempBoard, currentNode.isRoot());
             }
 
-            TreeNode tempNode = currentNode.findChild(tempPocket, tempBoard, currentNode.isRoot()); 
+            if(!lastNodeUsed) {      
+                TreeNode tempNode = currentNode.findChild(tempPocket, tempBoard, currentNode.isRoot()); 
 
-            if(tempNode == null) {
-                System.out.println("No node found from node at depth " + currentNode.getDepth() + ", creating new node.");
-                tempNode = new TreeNode(tempPocket, tempBoard);
-                //root.addChild(tempNode);
-                currentNode.addChild(tempNode);
-                nodeTotal++;
-                System.out.println("currentNodes depth is: " + currentNode.getDepth() + " | tempNodes depth is: " + tempNode.getDepth());
-            } else {
-                System.out.println("Node found under currentNode!");
-                System.out.println("currentNodes depth is: " + currentNode.getDepth() + " | tempNodes depth is: " + tempNode.getDepth());
+                if(tempNode == null) {
+                    System.out.println("No node found from node at depth " + currentNode.getDepth() + ", creating new node.");
+                    tempNode = new TreeNode(tempPocket, tempBoard);
+                    //root.addChild(tempNode);
+                    currentNode.addChild(tempNode);
+                    nodeTotal++;
+                    System.out.println("currentNodes depth is: " + currentNode.getDepth() + " | tempNodes depth is: " + tempNode.getDepth());
+                } else {
+                    System.out.println("Node found under currentNode!");
+                    System.out.println("currentNodes depth is: " + currentNode.getDepth() + " | tempNodes depth is: " + tempNode.getDepth());
+                }
+
+                currentNode = tempNode;
+                lastNode = tempNode;
+                lastBoardSize = data.getBoard().length;
             }
-
-            currentNode = tempNode;
-            lastNode = tempNode;
-            lastBoardSize = data.getBoard().length;
 
             System.out.println("Emplacing into queue (else) with depth of: " + currentNode.getDepth());
             queue.add(currentNode);
-            //System.out.println("Emplacement successful, new queue size: " + queue.size());
 
             String pull = data.getValidActions();
             String[] choices = pull.split(",");
@@ -322,6 +334,7 @@ public class AgentLateStart extends Player {
             out.close();
             fileOut.close();
             System.out.println("Tree has been saved in treenode.ser");
+            System.out.println("root had: " + root.getNumOfChildren() + " children.");
         }catch(IOException i) {
             i.printStackTrace();
         }
@@ -336,6 +349,8 @@ public class AgentLateStart extends Player {
             in.close();
             fileIn.close();
             nodeTotal = root.getTotalNodeCount();
+            System.out.println("root has: " + root.getNumOfChildren() + " children.");
+            //root.printChildrenDepths();
         }catch(IOException i) {
             root = new TreeNode("root");
             nodeTotal = 1;
@@ -355,18 +370,37 @@ public class AgentLateStart extends Player {
     // N = num of simulations after move
     // C = exploration paramter. sqrt(2) is good first guess. Adjust it to fit
     // T = total num of simulations. N of parent node
-    private double mctsAlg(int w, int n, int t){
+    private double mctsAlg(int w, int n, int t) {
+        System.out.println("w, n, t : " + w +  " " + n + " " + t);
+        double c = sqrt(2);
+
+        double nodeValue = (w / n);
+
+        double nodeData = sqrt(log(t) / n);
+
+        double biasValue = (c * nodeData);
+
+        return nodeValue + biasValue;
+        //return ((w/n) + (c * (sqrt(log(t) / n))));
+    }
+    /*private double mctsAlg(int w, int n, int t){
         double c = sqrt(2);
 
         return ((w/n) + (c * (sqrt(log(t) / n))));
-    }
+    }*/
 
     private int makeDecision(TreeNode inputNode, String[] choices) {
         System.out.println("Entering makeDecision");
 
+        int totalPlays = 0;
         int indexToReturn = -1;
         double mctsValue = -1;
         String currentChoice;
+
+        for(int j = 0; j < choices.length; j++) {        
+            totalPlays = totalPlays + inputNode.getActionPlays(choices[j]);
+        }
+
 
         // For each available action, let's pull data from the currentNode we're at to make a decision
         // on what we're going to return for our "choice"
@@ -383,17 +417,23 @@ public class AgentLateStart extends Player {
                 //return choices[i];
             // else, we have data for the current choice, let's calculate the MCTS "value" for the stats we have for that action at this state of the game
             } else {
-                double newMCTSValue = mctsAlg(inputNode.getActionWins(currentChoice), inputNode.getActionPlays(currentChoice), inputNode.getVisitCount());
+                //double newMCTSValue = mctsAlg(inputNode.getActionWins(currentChoice), inputNode.getActionPlays(currentChoice), inputNode.getVisitCount());
+                System.out.println("inputNode.getActionsWins(" + currentChoice + ") = " + inputNode.getActionWins(currentChoice));
+                double newMCTSValue = mctsAlg(inputNode.getActionWins(currentChoice), inputNode.getActionPlays(currentChoice), totalPlays);
 
-                if(currentChoice.equals("fold")) {
+                /*if(currentChoice.equals("fold")) {
                     System.out.println("fold, adjusting newmctsvalue");
                     newMCTSValue = newMCTSValue - .25;
-                }
+                }*/
 
-                System.out.println("newMCTSValue for choice " + currentChoice + " is " + newMCTSValue + " from the data (Wins, Plays, VisitCount) "
-                        + inputNode.getActionWins(currentChoice) + " " + inputNode.getActionPlays(currentChoice) + " " + inputNode.getVisitCount());
+                /*System.out.println("newMCTSValue for choice " + currentChoice + " is " + newMCTSValue + " from the data (Wins, Plays, VisitCount) "
+                        + inputNode.getActionWins(currentChoice) + " " + inputNode.getActionPlays(currentChoice) + " " + inputNode.getVisitCount());*/
+
+                System.out.println("newMCTSValue for choice " + currentChoice + " is " + newMCTSValue + " from the data (Wins, Plays, totalPlays) "
+                        + inputNode.getActionWins(currentChoice) + " " + inputNode.getActionPlays(currentChoice) + " " + totalPlays);
+
+
                 // if the newMCTSValue is greater than the previous one we've set (or the intialized value) let's set that we're going to return that action to the game
-
                 if (newMCTSValue > mctsValue) {
                     System.out.println("Replacing mctsValue with the choice of " + currentChoice + " " + newMCTSValue +  " > " + mctsValue);
                     mctsValue = newMCTSValue;

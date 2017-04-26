@@ -147,7 +147,8 @@ public class GameManagerSim {
         }
 
         while (activePlayers > 1 && actionsNeeded > 0) {
-            System.out.println("Action to "+ currentBettor + " (GameManagerSim)");
+            if (debug) { System.out.println("Action to "+ currentBettor + " (GameManagerSim)"); }
+
             if (stillIn[currentBettor]) {
                 String valid = "fold,";
                 if (raisesLeft > raiseLimit) {
@@ -182,9 +183,13 @@ public class GameManagerSim {
                 );
 
                 response = players[currentBettor].getAction(td);
-                System.out.println("GameManagerSim got response from " + players[currentBettor].getScreenName()
-                    + "(" + currentBettor + ")");
-                System.out.println("Response was : " + response + "\n");
+
+                if(debug) {
+                    System.out.println("GameManagerSim got response from " + players[currentBettor].getScreenName()
+                        + "(" + currentBettor + ")");
+                    System.out.println("Response was : " + response + "\n");
+                }
+
                 players[currentBettor].getScreenName();
 
                 if (!valid.contains(response)) {
