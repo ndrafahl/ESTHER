@@ -27,24 +27,22 @@ public class ESTHER {
         //         after each GAME the players shift one seat and the GAME
         //         is repeated (with the same hands from the previous GAME)
 
-        int mode = 4;
+        int mode = 2;
 
         int[] limits = {1,1,1,2,2};
         Player[] players = new Player[4];
 
 
         //Adjust the right side of these assignments to select new agents
-        //players[0] = new AgentRandomPlayer(1);
-        players[0] = new AgentAlwaysCall(1);
-        players[1] = new NeuralNetworkPlayer("5b","test5.best");
-        players[2] = new NeuralNetworkPlayer("2b","test2.best");
+        players[0] = new AgentRandomPlayer(0);
+        players[1] = new AgentAlwaysCall(1);
         //players[2] = new AgentRandomPlayer(2);
         //players[2] = new AgentLateStart(2);
-        //players[3] = new AgentAlwaysRaise(1);
-        //players[4] = new AgentRandomPlayer(3);
-        //players[5] = new AgentRandomPlayer(3);
+        players[2] = new AgentLateStart(2);
+        players[3] = new AgentAlwaysRaise(3);
+        players[4] = new AgentRandomPlayer(4);
         players[3] = new NeuralNetworkPlayer("6b","test6.best");
-        //players[1] = new AgentHumanCommandLine();
+        //players[5] = new AgentHumanCommandLine();
         //System.out.println("You will be player #6");
 
         if (mode == 1) {
@@ -59,7 +57,7 @@ public class ESTHER {
         }
         if (mode == 2) {
             Dealer dealer = new Dealer(players.length);
-            GameManager g = new GameManager(players, dealer, true);
+            GameManager g = new GameManager(players, dealer, false);
             double startTime = System.currentTimeMillis();
 
             int[] end = g.playGame();
@@ -69,6 +67,10 @@ public class ESTHER {
                 System.out.println((x + 1) + " "
                         + players[x].getScreenName() + " had " + end[x]);
             }
+
+            AgentLateStart test = (AgentLateStart) players[2];
+            System.out.println(test.getScreenName());
+            test.writeTree(); //writes the current tree to file: treenode.ser
 
             double endTime = System.currentTimeMillis();
             double runTime = (endTime - startTime) / 1000;
