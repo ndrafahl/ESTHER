@@ -1,9 +1,13 @@
 import DAOFiles.NeuralNetworkDAO;
 import NeuralNetwork.NeuralNetwork;
 import NeuralNetwork.NeuralNetworkBluePrint;
+import com.sun.xml.internal.ws.policy.privateutil.PolicyUtils;
 
+import java.io.FileInputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Scanner;
 
 /**
  * Created by Russell on 2/14/2017.
@@ -20,6 +24,11 @@ public class NeuralNetworkPlayer extends Player {
     int card1Rank, card2Rank, card1Suit, card2Suit;
     String name;
     int handNumber;
+    double[] winRateArray = new double[169];
+    double callThreshold, raiseThreshold;
+    int[] inputArray;
+    InputData inputData;
+
 
     /**********************************************************************
      * Constructors
@@ -31,11 +40,14 @@ public class NeuralNetworkPlayer extends Player {
      * our training function. The rest of the generations will use other constructors.
      ***********************************************************************/
 
-    public NeuralNetworkPlayer(String name){
-        bluePrint = new NeuralNetworkBluePrint(25, 3);
+
+    public NeuralNetworkPlayer(String name) throws IOException{
+        bluePrint = new NeuralNetworkBluePrint(54, 3);
         neuralNetwork = new NeuralNetwork(bluePrint);
+        winRateArray = createWinRateArray();
 
         this.name = name;
+        initThresholds();
 
     }
 
@@ -58,6 +70,9 @@ public class NeuralNetworkPlayer extends Player {
             throw e;
         }
         neuralNetwork = new NeuralNetwork(bluePrint);
+        winRateArray = createWinRateArray();
+        initThresholds();
+
     }
 
     /*******************************************************************************
@@ -68,17 +83,61 @@ public class NeuralNetworkPlayer extends Player {
      * @param bluePrint
      ******************************************************************************/
 
-    public NeuralNetworkPlayer(String name, NeuralNetworkBluePrint bluePrint){
+    public NeuralNetworkPlayer(String name, NeuralNetworkBluePrint bluePrint)throws IOException{
         this.name = name;
         neuralNetwork = new NeuralNetwork(bluePrint);
         this.bluePrint = bluePrint;
+        winRateArray = createWinRateArray();
+        initThresholds();
     }
 
-    public NeuralNetworkPlayer(NeuralNetworkBluePrint bluePrint){
+    public NeuralNetworkPlayer(NeuralNetworkBluePrint bluePrint) throws IOException{
         name = "Samuel";
         neuralNetwork = new NeuralNetwork(bluePrint);
         this.bluePrint = bluePrint;
+        winRateArray = createWinRateArray();
+        initThresholds();
     }
+    public NeuralNetworkPlayer(NeuralNetworkBluePrint bluePrint, double[] winRateArray){
+        name = "Samuel";
+        neuralNetwork = new NeuralNetwork(bluePrint);
+        this.bluePrint = bluePrint;
+        this.winRateArray = winRateArray;
+    }
+
+
+
+    private double[] createWinRateArray() throws IOException {
+        Scanner fileIn;
+        String winRatesString;
+        double winRate;
+
+        try {
+            fileIn = new Scanner(new FileInputStream("winRates"));
+        } catch (IOException e) {
+            throw e;
+        }
+        for (int i = 0; i < 169; i++){
+            winRatesString = fileIn.nextLine();
+            winRate = Double.valueOf(winRatesString);
+            winRateArray[i] = winRate;
+        }
+        return winRateArray;
+
+    }
+
+    private void initThresholds(){
+        callThreshold = .16;
+        raiseThreshold = .22;
+    }
+
+    public void setRaiseThreshold(double threshold){raiseThreshold = threshold;}
+
+    public void setCallThreshold(double threshold){callThreshold = threshold;}
+
+    public double getCallThreshold(){return callThreshold;}
+
+    public double getRaiseThreshold(){return raiseThreshold;}
 
     @Override
     public String getScreenName() {
@@ -86,31 +145,89 @@ public class NeuralNetworkPlayer extends Player {
     }
 
     @Override
-    public String getAction(TableData data){              //STILL UNDER CONSTRUCTION!!! THE InputData CLASS STILL NEEDS TO BE IMPLEMENTED.
+    public String getAction(TableData data){    //STILL UNDER CONSTRUCTION!!! THE InputData CLASS STILL NEEDS TO BE IMPLEMENTED.
         String pull = data.getValidActions();
-        int neuronIndex = 0;
 
-        InputData inputData = new InputData(data);
+        if(data.getBettingRound() == 1){
+            int[] pocketCards = data.getPocket();
+            int pocket1Rank = pocketCards[0] % 13;
+            int pocket2Rank = pocketCards[1] % 13;
+            int pocket1Suit = pocketCards[0] / 13;
+            int pocket2Suit = pocketCards[1] / 13;
+            int arrayIndex;
+            double winRate;
 
-        String decision = neuralNetwork.makeDecision(inputData.getInputList());
 
-        if(decision == "fold" && pull.contains("check")){
-            return "check";
+            if (pocket1Suit == pocket2Suit) {
+                if (pocket1Rank < pocket2Rank) {
+                    arrayIndex = (pocket1Rank * 13) + pocket2Rank;
+                }
+                else {
+                    arrayIndex = (pocket2Rank * 13) + pocket1Rank;
+                }
+            }
+
+            else {
+                if (pocket1Rank < pocket2Rank) {
+                    arrayIndex = (pocket2Rank * 13) + pocket1Rank;
+                }
+                else {
+                    arrayIndex = (pocket1Rank * 13) + pocket2Rank;
+                }
+            }
+
+            winRate = winRateArray[arrayIndex];
+            String decision = "fold";
+            if (winRate > raiseThreshold){
+                decision = "bet";
+            }
+            else if (winRate >= callThreshold){
+                decision = "call";
+            }
+            if (decision == "fold" && pull.contains("check")) {
+                return "check";
+            }
+            else if (pull.contains(decision)) {
+                return decision;
+            }
+            else if (decision == "bet" && pull.contains("raise")) {
+                return "raise";
+            }
+            else if (decision == "bet" && !pull.contains("raise")) {
+                return "call";
+            }
+            else if (decision == "call" && pull.contains("check")) {
+                return "check";
+            }
+            else {
+                return decision;
+            }
+
         }
-        else if(pull.contains(decision)){
-            return decision;
-        }
-        else if(decision == "bet" && pull.contains("raise")){
-            return "raise";
-        }
-        else if(decision == "bet" && !pull.contains("raise")){
-            return "call";
-        }
-        else if(decision == "call" && pull.contains("check")){
-            return "check";
-        }
-        else{
-            return "fold";
+
+        else {
+
+
+            inputArray = inputData.getInputList(data);
+
+
+            String decision = neuralNetwork.makeDecision(inputArray);
+            //System.out.println(decision);
+
+            if (decision == "fold" && pull.contains("check")) {
+                return "check";
+            } else if (pull.contains(decision)) {
+                return decision;
+            } else if (decision == "bet" && pull.contains("raise")) {
+                return "raise";
+            } else if (decision == "bet" && !pull.contains("raise")) {
+                return "call";
+            } else if (decision == "call" && pull.contains("check")) {
+                return "check";
+            } else {
+                return "fold";
+            }
+
         }
     }
 

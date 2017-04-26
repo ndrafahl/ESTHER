@@ -4,6 +4,9 @@
  * and open the template in the editor.
  */
 
+import DAOFiles.NeuralNetworkDAO;
+import NeuralNetwork.NeuralNetworkBluePrint;
+
 import java.io.IOException;
 import java.util.HashMap;
 
@@ -25,10 +28,9 @@ public class ESTHER {
         //         is repeated (with the same hands from the previous GAME)
 
         int mode = 2;
-      
 
-
-        Player[] players = new Player[6];
+        int[] limits = {1,1,1,2,2};
+        Player[] players = new Player[4];
 
 
         //Adjust the right side of these assignments to select new agents
@@ -39,12 +41,12 @@ public class ESTHER {
         players[2] = new AgentLateStart(2);
         players[3] = new AgentAlwaysRaise(3);
         players[4] = new AgentRandomPlayer(4);
-        players[5] = new AgentRandomPlayer(5);
+        players[3] = new NeuralNetworkPlayer("6b","test6.best");
         //players[5] = new AgentHumanCommandLine();
         //System.out.println("You will be player #6");
-         
+
         if (mode == 1) {
-            Dealer dealer = new Dealer(players.length, 123456789);
+            Dealer dealer = new Dealer(players.length);
             GameManager g = new GameManager(players, dealer, false);
             int[] end = g.playGame();
             System.out.println("Final Totals");
@@ -76,12 +78,12 @@ public class ESTHER {
         }
         if (mode == 3) {
             //Setup HashMap to store overall results
-            HashMap<String,Integer> outcome = new HashMap<>();
+            HashMap<String, Integer> outcome = new HashMap<>();
             for (Player player : players) {
                 outcome.put(player.getScreenName(), 0);
             }
-            
-            
+
+
             for (int x = 0; x < players.length; x++) {
                 System.out.println("Starting RND " + (x + 1) + " of the tournament.");
                 Dealer dealer = new Dealer(players.length, 123456789);
@@ -92,7 +94,7 @@ public class ESTHER {
                     String name = players[y].getScreenName();
                     System.out.println((y + 1) + " "
                             + name + " had " + end[y]);
-                    outcome.put(name,outcome.get(name)+end[y]);
+                    outcome.put(name, outcome.get(name) + end[y]);
                 }
                 System.out.println();
 
@@ -103,24 +105,48 @@ public class ESTHER {
                 }
                 players = temp;
             }
-            
+
             System.out.println("OVERALL OUTCOME");
             for (Player player : players) {
                 String name = player.getScreenName();
-                System.out.println(name+" "+outcome.get(name));
+                System.out.println(name + " " + outcome.get(name));
             }
         }
 
         if (mode == 4) {
-            TrainingFunction trainer = new TrainingFunction();
-            try {
-                trainer.generateData("new250LimitResultsWithVarRound.arff");
+            Dealer dealer = new Dealer(players.length);
+            GameManager g = new GameManager(players, dealer, false, limits, 3, 10000);
+            int[] end = g.playGame();
+            System.out.println("Final Totals");
+            for (int x = 0; x < end.length; x++) {
+                System.out.println((x + 1) + " "
+                        + players[x].getScreenName() + " had " + end[x]);
             }
-            catch (IOException e){
+
+        }
+
+        if (mode == 5) {
+            try {
+                PreFlopDecision.buildPocketArray(5);
+            } catch (IOException e) {
                 throw e;
             }
+        }
 
+        if(mode == 6){
+            PreflopTrainer.trainPreflop();
+        }
 
+        if(mode == 7){
+            GATrainingFunc trainer = new GATrainingFunc();
+            trainer.GAtrainingFunc(1000,36,4,4,4,4,
+                    8,8,2,2,300,"test1.");
+        }
+
+        if(mode == 8){
+            NeuralNetworkDAO fileDAO = new NeuralNetworkDAO();
+            NeuralNetworkBluePrint bluePrint = fileDAO.loadNeuralNetworkList("test6.best");
+            System.out.println(String.valueOf(bluePrint.getNumOfInputs()));
         }
 
     }
