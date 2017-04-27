@@ -10,9 +10,9 @@ import static java.lang.Math.*;
 /**
  * Created by Nick Drafahl on 2/13/2017.
  */
-public class AgentLateStart extends Player {
+public class AgentMCTSBot extends Player {
     // SERIALIZE is a constant that determines whether or not we are going to write/read data from a serialized Tree from previous runs of ESTHER
-    private final boolean SERIALIZE = false;
+    private final boolean SERIALIZE;
 
     private final int num;
     private final int[] limits = {1, 1, 1, 2, 2};
@@ -49,16 +49,17 @@ public class AgentLateStart extends Player {
     // we backPropagate at the end of a simulation
     private LinkedList<String> actionQueue;
 
-    // queue is similar to actionQueue, except that this is a LIFO queue that maintains which nodes we've visited in a simulation.  Will be the
-    // same size as actionQueue
+    // queue is similar to actionQueue, except that this is a LIFO queue that maintains which nodes we've visited in a simulation.  
+    // Will be the same size as actionQueue
     private LinkedList<TreeNode> queue;
     
     // localData is where we store the cloned version of the TableData that gets passed into getAction()
     private TableData localData;
 
     // our only constructor, this initializes the local treenodes stored in this object, as well as handling the call to readTree() if SERIALIZE is true
-    public AgentLateStart (int num) {
+    public AgentMCTSBot (int num, boolean serialization) {
         this.num = num;
+        this.SERIALIZE = serialization;
 
         // if SERIALIZE is true, let's read in treenode.ser if it's available.  else, let's default root to a node with no children
         if (SERIALIZE) {
@@ -96,9 +97,9 @@ public class AgentLateStart extends Player {
 
         // debugging information
         if (simulate) {
-            System.out.println("MCTS Bot: Not running simulation, being prompted for action.");
+            System.out.println("MCTS Bot: Not running simulation, being prompted for action (call from GameManager).\n");
         } else {
-            System.out.println("MCTS Bot: Running a simulation, being prompted for action.");
+            System.out.println("MCTS Bot: Running a simulation, being prompted for action (call from GameManagerSim).\n");
         }
 
         // generate localData for this bot from the tableData that was passed into getAction(), as we do not want to modify that data as it's being used by 
@@ -144,12 +145,12 @@ public class AgentLateStart extends Player {
                 nodeFound = true;
             }
 
-            // we want to make our current state what we base our choice on, so let's switch our currentNode to that state
+            // we want to make our current state to be what we base our choice on, so let's switch our currentNode to that state
             currentNode = sTempNode;
 
             // if we found the node, let's see if we have enough data about our available actions to return a decision to GameManager
             if(nodeFound) {
-                choice = makeDecision(currentNode, choices);
+                choice = makeDecision(currentNode, choices); // will return -1 if one of our available choices has no data (i.e never been played)
                 lastSimNode = currentNode;
             // else, we have no valid choice to make
             } else {
@@ -175,6 +176,7 @@ public class AgentLateStart extends Player {
                 // right now, we have this set to 1 second
                 for(long stop = System.nanoTime()+TimeUnit.SECONDS.toNanos(1); stop > System.nanoTime(); ) {
 
+                    // generate a clone of the TableData we were given, so we do not modify it
                     generateLocalData( (TableData) data.clone());        
 
                     System.out.println("Simulations ran so far: " + simulationsRan);
@@ -209,14 +211,13 @@ public class AgentLateStart extends Player {
 
                 // set lastRealBoardSize to the current board length, that way if we get called from the same state (perhaps we have the chance to raise/bet a second time) we know to reuse this state
                 lastRealBoardSize = data.getBoard().length;
-            }
+            } // end (if choice == -1)
 
-            // simulate = true;
-
-            // return our choice to GameManager.  this occurs whether or not we had to simulate
-            System.out.println("MCTS Bot: Returning " + choices[choice] + " to GameManager");
+            // return our choice to GameManager, this occurs whether or not we had to simulate
+            System.out.println("MCTS Bot: Returning " + choices[choice] + " to GameManager.");
             return choices[choice];
 
+        // else only occurs if getAction() is called from GameManagerSim, which means we're in the middle of a simulation
         } else {
             
             // set lastNodeUsed to false.  this is going to determine whether or not we'll reuse the state we were previously at in the simulation (i.e last getAction() had 2 cards in hand, 3 cards on the board, 
@@ -333,6 +334,8 @@ public class AgentLateStart extends Player {
     // if we won the game, we'll update the Win values for the action we took at that state, as well as updating the visit counts
     private void backPropagate(boolean simulationWon) {
 
+        System.out.println("MCTS Bot: Back propagating through states visited, updating node values.");
+
         // local variables for storage
         TreeNode backNode;
         String backAction;
@@ -345,7 +348,7 @@ public class AgentLateStart extends Player {
             backNode = queue.getLast();
             backAction = actionQueue.getLast();
 
-            System.out.println("Depth : " + backNode.getDepth() + " Action to get here: " + backAction);
+            System.out.println("Action to get here: " + backAction);
 
             System.out.println("Stats for this node before update (plays, wins, visits): " + backNode.getActionPlays(backAction) + " " + backNode.getActionWins(backAction) + " " + backNode.getVisitCount());
             backNode.updateNodeStats(simulationWon, backAction);
@@ -495,18 +498,22 @@ public class AgentLateStart extends Player {
         boolean simulationWon = false; // by default, assume we're running a simulation and we've lost that simulation
 
         System.out.println();
-        System.out.println("Hand is over.");
-        System.out.print("Winner(s):");
+        System.out.println("MCTS Bot: Simulation of the hand is over.");
+        System.out.print("MCTS Bot:  Simulation Winner(s):");
         int winningHand = -1;
         for (Integer i : r.getWhoWon()) {
             if(i == this.num) {
-                System.out.println("AgentLateStart won!");
+                //System.out.println("MCTSBot: Won this simulation.");
                 simulationWon = true;
             }
 
             System.out.print(" " + (i));
             winningHand = i;
         }
+        if (simulationWon) {
+            System.out.println("\nMCTS Bot: Won this simulation.");
+        }
+
         System.out.println();
 
         // if we're running a simulation (!simulate), then let's backPropagate and update our states visited
