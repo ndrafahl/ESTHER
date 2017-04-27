@@ -30,7 +30,7 @@ public class ESTHER {
         int mode = 2;
 
         int[] limits = {1,1,1,2,2};
-        Player[] players = new Player[4];
+        Player[] players = new Player[6];
 
 
         //Adjust the right side of these assignments to select new agents
@@ -41,7 +41,8 @@ public class ESTHER {
         players[2] = new AgentLateStart(2);
         players[3] = new AgentAlwaysRaise(3);
         players[4] = new AgentRandomPlayer(4);
-        players[3] = new NeuralNetworkPlayer("6b","test6.best");
+        //players[5] = new NeuralNetworkPlayer("6b","test6.best");
+        players[5] = new AgentRandomPlayer(5);
         //players[5] = new AgentHumanCommandLine();
         //System.out.println("You will be player #6");
 
@@ -68,9 +69,9 @@ public class ESTHER {
                         + players[x].getScreenName() + " had " + end[x]);
             }
 
-            AgentLateStart test = (AgentLateStart) players[2];
-            System.out.println(test.getScreenName());
-            test.writeTree(); //writes the current tree to file: treenode.ser
+            //AgentLateStart test = (AgentLateStart) players[2];
+
+            //test.writeTree(); //writes the current tree to file: treenode.ser
 
             double endTime = System.currentTimeMillis();
             double runTime = (endTime - startTime) / 1000;
