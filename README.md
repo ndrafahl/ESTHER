@@ -8,10 +8,10 @@ Currently the two "Intelligent" bots are the Neural Network bot, and the Monte C
 Created for Dr. Schafer's Intelligent Systems class at the University of Northern Iowa in Cedar Falls 
 
 # Programmers
-Alex Kehrli
-Nick Drafahl
-Russell Rook
-Sam Kleiss
+Alex Kehrli  
+Nick Drafahl  
+Russell Rook  
+Sam Kleiss  
 
 # Usage  
 ESTHER requires no extra packages to be installed, outside of Java 1.8 (preferred version of Java) and whatever IDE of choice you may like.  
