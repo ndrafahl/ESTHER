@@ -29,19 +29,20 @@ public class ESTHER {
 
         int mode = 2;
 
+        // this controls whether or not the MCTS Bot should read and write it's root node to a JSON file
+        boolean MCTS_SERIALIZE = false;
+
         int[] limits = {1,1,1,2,2};
-        Player[] players = new Player[4];
+        Player[] players = new Player[6];
 
 
         //Adjust the right side of these assignments to select new agents
         players[0] = new AgentRandomPlayer(0);
         players[1] = new AgentAlwaysCall(1);
-        //players[2] = new AgentRandomPlayer(2);
-        //players[2] = new AgentLateStart(2);
-        players[2] = new AgentLateStart(2);
+        players[2] = new AgentMCTSBot(2, MCTS_SERIALIZE);
         players[3] = new AgentAlwaysRaise(3);
         players[4] = new AgentRandomPlayer(4);
-        players[3] = new NeuralNetworkPlayer("6b","test6.best");
+        players[5] = new NeuralNetworkPlayer("6b","test6.best");
         //players[5] = new AgentHumanCommandLine();
         //System.out.println("You will be player #6");
 
@@ -57,7 +58,7 @@ public class ESTHER {
         }
         if (mode == 2) {
             Dealer dealer = new Dealer(players.length);
-            GameManager g = new GameManager(players, dealer, false);
+            GameManager g = new GameManager(players, dealer, true);
             double startTime = System.currentTimeMillis();
 
             int[] end = g.playGame();
@@ -68,9 +69,10 @@ public class ESTHER {
                         + players[x].getScreenName() + " had " + end[x]);
             }
 
-            AgentLateStart test = (AgentLateStart) players[2];
-            System.out.println(test.getScreenName());
-            test.writeTree(); //writes the current tree to file: treenode.ser
+            if (MCTS_SERIALIZE) {
+                AgentMCTSBot MCTSBot = (AgentMCTSBot) players[2];
+                MCTSBot.writeTree(); //writes the current tree to file: treenode.ser
+            }
 
             double endTime = System.currentTimeMillis();
             double runTime = (endTime - startTime) / 1000;
