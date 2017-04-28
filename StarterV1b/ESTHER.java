@@ -42,8 +42,7 @@ public class ESTHER {
         players[2] = new AgentMCTSBot(2, MCTS_SERIALIZE);
         players[3] = new AgentAlwaysRaise(3);
         players[4] = new AgentRandomPlayer(4);
-        //players[5] = new NeuralNetworkPlayer("6b","test6.best");
-        players[5] = new AgentRandomPlayer(5);
+        players[5] = new NeuralNetworkPlayer("6b","test6.best");
         //players[5] = new AgentHumanCommandLine();
         //System.out.println("You will be player #6");
 
