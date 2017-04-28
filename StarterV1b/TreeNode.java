@@ -14,13 +14,12 @@ public class TreeNode implements java.io.Serializable {
     private TreeNode parent;
     private List<TreeNode> children;
 
-    private TreeNode serialChild;
-
     private String name;
     private int depth;
 
     private int visits;
 
+    // local variables used for the MCTS Algorithm
     private int betWins;
     private int betPlays;
     private int raiseWins;
@@ -35,8 +34,10 @@ public class TreeNode implements java.io.Serializable {
     private int[] pocket;
     private int[] board;
 
+    // used only as a sanity check for when we write and read the root node to a serialized file
     private int totalNodeCount;
 
+    // this constructor is only ever used by root, as it's the only node that gets a name
     public TreeNode(String aName) {
 	    this.name = aName;
         this.depth = 0;
@@ -86,6 +87,8 @@ public class TreeNode implements java.io.Serializable {
         return this.visits;
     }
 
+    // returns integer value of how many times we've won with a given action at this node
+    // used by the MCTS Algorithm
     public int getActionWins(String action) {
         if(action.equals("bet")) {
             return this.betWins;
@@ -105,6 +108,8 @@ public class TreeNode implements java.io.Serializable {
         return 0;
     }
 
+    // returns integer value of how many times we've played a given action at this node
+    // used by the MCTS Algorithm
     public int getActionPlays(String action) {
         if(action.equals("bet")) {
             return this.betPlays;
@@ -123,36 +128,6 @@ public class TreeNode implements java.io.Serializable {
 
         return 0;
     }
-
-
-    public int getBetWins() {
-        return this.betWins;
-    }
-
-    public int getFoldWins() {
-        return this.foldWins;
-    }
-
-    public int getCallWins() {
-        return this.callWins;
-    }
-
-    public int getRaiseWins() {
-        return this.raiseWins;
-    }
-
-    public int getCheckWins() {
-        return this.checkWins;
-    }
-
-    public int getBetPlays() {
-        return this.betPlays;
-    }
-
-    public int getFoldPlays() {
-        return this.foldPlays;
-    }
-
 
     public int[] getBoard() {
         return this.board;
@@ -179,48 +154,28 @@ public class TreeNode implements java.io.Serializable {
     }
 
     public boolean isRoot() {
-        boolean rBool = (name == "root");
-        //System.out.println("rBool is: " + rBool);
         return (name == "root");
     }
 
-    /*public TreeNode findChild(int[] intArray) {
-        for(TreeNode t : this.children) {
-            if(this.name == "root" || this.parent.getName() == "root") {
-                if(Arrays.equals(t.getPocket(), intArray)) {
-                    return t;
-                } else {
-                    return null;
-                }
-            } else {
-                if(Arrays.equals(t.getBoard(), intArray)) {
-                    return this;
-                } else {
-                    return null;
-                }
-            }
-        }
-
-        return null;
-    }*/
-
+    // findChild will taken in the current Pocket, Board, and whether or not the Node is root and return if it was able to find a given child
+    // under the node with the Pocket/Board combo given
     public TreeNode findChild(int[] inPocket, int[] inBoard, boolean isRoot) {
 
-        if(this.children.size() == 0) {
-            //System.out.println("findChild is returning because there are 0 children");
+        // if we have no children, we aren't going to find any, return null
+        if(this.children.size() == 0) {           
             return null;
         }
 
         for(TreeNode t : this.children) {
+            // if this node is root, we just need to compare the inboard pocket cards to our pocket cards
             if(isRoot) {
-                //System.out.println("findChild evaluted that this is root");
                 if(Arrays.equals(t.getPocket(), inPocket)) {
                     return t;
                 } else {
                     return null;
                 }
+            // else, this node isn't root, and we need to compare the board to our board
             } else {
-                //System.out.println("findChild evaluated that this is not root");
                 if(Arrays.equals(t.getBoard(), inBoard)) {
                     return this;
                 } else {
@@ -229,63 +184,26 @@ public class TreeNode implements java.io.Serializable {
             }
         }
 
+        // should never occur, but return null if somehow it does
         System.out.println("findChild is returning because something went wrong!");
         return null;
     }
 
-    public void printChildrenDepths() {
-        for (TreeNode node : this.getChildren()) {
-            System.out.println(node.getDepth() + " ");
-        }
-    }
-
-    public void recursionToRoot() {
-        if(this.name == "root" || this.parent == null) {
-            System.out.println("My name is root and my depth is: " + this.depth);
-            //System.out.println(this.depth);
-            //return;
-        } else {
-            System.out.println("My name is not root and my depth is: " + this.depth);
-            this.getParent().recursionToRoot();
-            //recursionToRoot(this.parent);
-        }
-
-        return;
-    }
-
-    public void recursionToRoot(TreeNode t) { 
-        //System.out.println(this.getDepth());
-        
-        if(this.name == "root" || this.parent == null) {
-            System.out.println("My name is root and my depth is: " + this.depth);
-            //return;
-        } else {
-            System.out.println("My name is not root and my depth is: " + this.depth);
-            recursionToRoot(this.parent);
-        }
-
-        return;
-    }
-
-    public void setSerialChild(TreeNode t) {
-        this.serialChild = t;
-    }
-       
-    public TreeNode getSerialChild() {
-        return this.serialChild;
-    }
-
+    // sets root's totalNodeCount prior to writing root to a serialized file
     public void setTotalNodeCount(int nodeCount) {
         this.totalNodeCount = nodeCount;
     }
 
+    // used only by root, get's the total node count after we've read root in from a serialized file
     public int getTotalNodeCount() {
         return this.totalNodeCount;
     }
 
     public boolean hasChildren() { return !children.isEmpty();}
-    // other features ...
 
+    // updateNodeStats is only ever called when backPropagate is called in AgentMCTSBot
+    // we're going to update the nodes stats based on what the action was taken for that state of the game, as well
+    // as whether or not we won that game
     public void updateNodeStats(boolean gameWon, String action) {
         System.out.println("updatedNodeStats called with gameWon = " + gameWon);
 

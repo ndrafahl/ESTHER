@@ -63,7 +63,7 @@ public class GameManagerSim {
     }
 
     public int[] playGame(TableData data) {
-        System.out.println("Playing Game from GameManagerSim");
+        if (debug) { System.out.println("Playing Game from GameManagerSim"); }
 
         //Loop for each hand
         for (handNumber = 1; handNumber < hands + 1; handNumber++) {
