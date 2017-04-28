@@ -1,11 +1,11 @@
 # ESTHER
-Limit Texas Hold'em Client/Server Software in Java
+Limit Texas Hold'em Client/Server Software in Java, with a focus on Intelligent Bot play.
 
 # Project
 Create Artificial Intelligence that can play Limit Texas Hold'em against each other, or human players.  
 Currently the two "Intelligent" bots are the Neural Network bot, and the Monte Carlo Tree Search bot.  
 
-Created for Dr. Schafer's Intelligent Systems class at the Univerisity of Northern Iowa  
+Created for Dr. Schafer's Intelligent Systems class at the University of Northern Iowa in Cedar Falls 
 
 # Programmers
 Alex Kehrli
