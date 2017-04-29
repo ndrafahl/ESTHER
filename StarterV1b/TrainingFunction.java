@@ -13,6 +13,12 @@ public class TrainingFunction {
 
     public static BestHand bestHand;
 
+    /**
+     * This function was created to gather data to be used in training our neural network using WEKA. This was later
+     * scratch because WEKA didn't work they way we needed it to.
+     * @param aFile
+     * @throws IOException
+     */
     public void generateData(String aFile) throws IOException {
 
         try {
@@ -91,6 +97,11 @@ public class TrainingFunction {
 
     }
 
+    /**
+     * This function converts an integer card value to a 7 bit string that is used in our input data class.
+     * @param card
+     * @return
+     */
     public String cardToBinaryString(int card){
         int cardRank = card % 13;
         int cardSuit = card / 13;

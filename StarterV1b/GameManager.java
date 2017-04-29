@@ -68,7 +68,7 @@ public class GameManager {
         int[] limits = {1, 1, 1, 2, 2};
         this.bets = limits;
         this.raiseLimit = 3;
-        this.hands = 1 * players.length; // Controls the amount of hands played in a single "game"
+        this.hands = 200 * players.length; // Controls the amount of hands played in a single "game"
         //this.hands = 1;
 
         gameLevelSetup();
@@ -139,7 +139,7 @@ public class GameManager {
 
     private void handLevelSetup(int hand) {
         button = (button + 1) % players.length;
-        System.out.println("handLevelSetup in GameManager called at hand " + hand + " and button is now " + button);
+        //System.out.println("handLevelSetup in GameManager called at hand " + hand + " and button is now " + button);
 
         for (int x = 0; x < players.length; x++) {
             stillIn[x] = true;
@@ -253,6 +253,7 @@ public class GameManager {
                         stillIn[currentBettor] = false;
                         break;
                 }
+                //System.out.println("This Player chose to: " + response);
             } else {
                 response = "out";
             }
