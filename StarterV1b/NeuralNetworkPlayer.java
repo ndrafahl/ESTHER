@@ -1,12 +1,8 @@
 import DAOFiles.NeuralNetworkDAO;
 import NeuralNetwork.NeuralNetwork;
 import NeuralNetwork.NeuralNetworkBluePrint;
-//import com.sun.xml.internal.ws.policy.privateutil.PolicyUtils;
-
 import java.io.FileInputStream;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Scanner;
 
 /**
@@ -23,7 +19,6 @@ public class NeuralNetworkPlayer extends Player {
     boolean suited;
     int card1Rank, card2Rank, card1Suit, card2Suit;
     String name;
-    int handNumber;
     double[] winRateArray = new double[169];
     double callThreshold, raiseThreshold;
     int[] inputArray;
@@ -106,7 +101,11 @@ public class NeuralNetworkPlayer extends Player {
     }
 
 
-
+    /**
+     * This method creates the players preflop array used for making decisions.
+     * @return
+     * @throws IOException
+     */
     private double[] createWinRateArray() throws IOException {
         Scanner fileIn;
         String winRatesString;
@@ -126,6 +125,10 @@ public class NeuralNetworkPlayer extends Player {
 
     }
 
+    /**
+     * This method sets the players call and raise thresholds. These values were determined using our training
+     * function.
+     */
     private void initThresholds(){
         callThreshold = .16;
         raiseThreshold = .22;
@@ -144,11 +147,19 @@ public class NeuralNetworkPlayer extends Player {
         return name;
     }
 
+    /**
+     * getAction takes in the table data from the gameManager and uses either the preflop algorithm or neural network
+     * to make a decision on what action to take.
+     * @param data a TableData instance passed to you by the ESTHER server
+     * @return
+     */
     @Override
-    public String getAction(TableData data){    //STILL UNDER CONSTRUCTION!!! THE InputData CLASS STILL NEEDS TO BE IMPLEMENTED.
+    public String getAction(TableData data){
         String pull = data.getValidActions();
 
+        //This checks if its in the first betting round to the hand
         if(data.getBettingRound() == 1){
+            //This calculates the players two pocket cards rank and suits used in its preflop decision making.
             int[] pocketCards = data.getPocket();
             int pocket1Rank = pocketCards[0] % 13;
             int pocket2Rank = pocketCards[1] % 13;
@@ -158,6 +169,7 @@ public class NeuralNetworkPlayer extends Player {
             double winRate;
 
 
+            //This determines the index where the players pocket card hand win rate is in the win rate array.
             if (pocket1Suit == pocket2Suit) {
                 if (pocket1Rank < pocket2Rank) {
                     arrayIndex = (pocket1Rank * 13) + pocket2Rank;
@@ -176,6 +188,7 @@ public class NeuralNetworkPlayer extends Player {
                 }
             }
 
+            //This checks to see if the players preflop hand is good enough to play.
             winRate = winRateArray[arrayIndex];
             String decision = "fold";
             if (winRate > raiseThreshold){
@@ -205,15 +218,21 @@ public class NeuralNetworkPlayer extends Player {
 
         }
 
+
+        //This section handles all decisions after the preflop betting round.
         else {
 
 
+            //This creates the input data for the neural network.
             inputArray = inputData.getInputList(data);
 
 
+            //This sends the input data array to the neural network and stores what decision it makes.
             String decision = neuralNetwork.makeDecision(inputArray);
             //System.out.println(decision);
 
+            //This determines if the decision the neural network made was a valid choice and if not it makes the appropriate
+            //action.
             if (decision == "fold" && pull.contains("check")) {
                 return "check";
             } else if (pull.contains(decision)) {
@@ -230,43 +249,4 @@ public class NeuralNetworkPlayer extends Player {
 
         }
     }
-
-    /************************************************************************
-     * This method calculates the index of the neural network trained for the
-     * two cards it was dealt. I could explain the mathematical formula used
-     * below but it would take some time to explain. For now just understand
-     * that all it does is returns the index of a specific neural network.
-     * @param pocketCards
-     * @return
-     ***********************************************************************/
-
-    private int findNeuron(int[] pocketCards){
-        card1Suit = pocketCards[0] / 13;
-        card2Suit = pocketCards[1] / 13;
-        card1Rank = pocketCards[0] % (card1Suit * 13);
-        card2Rank = pocketCards[1] % (card2Suit * 13);
-        int summation = 0;
-        if(card1Suit == card2Suit){
-            suited = true;
-            for(int i = 0; i < Math.min(card1Rank, card2Rank); i++){
-                summation += 12 - i;
-            }
-            summation += Math.max(card1Rank, card2Rank) - Math.min(card1Rank, card2Rank) - 1 + 91;
-        }
-        else {
-            suited = false;
-            for(int i = 0; i < Math.min(card1Rank, card2Rank); i++){
-                summation += 13 - i;
-            }
-            summation += Math.max(card1Rank, card2Rank) - Math.min(card1Rank, card2Rank);
-        }
-        return summation;
-    }
-
-    @Override
-    public void newHand(int handNumber, int[] cashBalance){
-
-    }
-
-
 }
